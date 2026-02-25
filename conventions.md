@@ -58,15 +58,6 @@ This project follows the Conventional Commits specification.
 The project follows a layered architecture to ensure modularity and
 scalability.
 
-src/ │ ├── config/ \# Database & environment configuration ├──
-controllers/ \# Request handling logic ├── services/ \# Business logic
-├── repositories/ \# Database queries (mysql2) ├── routes/ \# API routes
-definitions ├── middlewares/ \# Custom middleware (auth, validation,
-error) ├── utils/ \# Utility functions └── app.js \# Express app
-configuration
-
-server.js \# Application entry point
-
 ### Architecture Rules
 
 -   Controllers must not contain SQL queries.
