@@ -45,6 +45,7 @@ ManageRestaurantOrder/
 │   ├── services/       # Business logic layer
 │   ├── repositories/   # Database queries (mysql2)
 │   ├── middlewares/    # Custom middlewares (auth, error handling)
+│   ├── utils/          # Utility functions
 │   └── app.js          # Express configuration
 │
 ├── server.js           # Application entry point
