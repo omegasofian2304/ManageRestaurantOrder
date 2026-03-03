@@ -1,0 +1,30 @@
+{
+  "name": "managerestaurantorder",
+  "version": "1.0.0",
+  "description": "ManageRestaurantOrder is a backend-only REST API designed to manage orders in a fast food restaurant system.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omegasofian2304/ManageRestaurantOrder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omegasofian2304/ManageRestaurantOrder/issues"
+  },
+  "homepage": "https://github.com/omegasofian2304/ManageRestaurantOrder#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mysql2": "^3.18.2",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
