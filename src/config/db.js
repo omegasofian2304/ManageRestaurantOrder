@@ -1,3 +1,9 @@
+/*
+Author : Sofian Hussein
+Date : 04.03.2026
+Title : db.js
+Desc : This file contains the pool for the db
+*/
 import mysql from 'mysql2/promise';
 
 const pool = mysql.createPool({
