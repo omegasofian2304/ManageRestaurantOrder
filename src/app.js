@@ -1,8 +1,13 @@
 import express from "express";
-
+import errorMiddleware from './middlewares/errorMiddleware.js'
+import mealRouter from "./routes/mealRoute.js";
 const app = express();
 
 app.use(express.json());
+
+app.use("/meals", mealRouter);
+
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 

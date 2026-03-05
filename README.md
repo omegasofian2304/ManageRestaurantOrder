@@ -45,9 +45,8 @@ ManageRestaurantOrder/
 │   ├── services/       # Business logic layer
 │   ├── repositories/   # Database queries (mysql2)
 │   ├── middlewares/    # Custom middlewares (auth, error handling)
-│   └── app.js          # Express configuration
 │
-├── server.js           # Application entry point
+├── app.js              # Application entry point
 ├── .env                # Environment variables (not committed)
 ├── package.json
 └── README.md
