@@ -4,7 +4,7 @@ Date : 04.03.2026
 Title : mealController.js
 Desc : File containing all functions for the meal table
 */
-import { addMeal } from "../services/mealService.js"
+import {addMeal, updateMeal} from "../services/mealService.js"
 
 export async function createMeal(req, res, next) {
     try {
@@ -20,6 +20,47 @@ export async function createMeal(req, res, next) {
 
         const meal = await addMeal(name, price, description)
         return res.status(201).json(meal)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function modifyMeal(req, res, next){
+    try {
+        const {name, price, description, is_available} = req.body
+        const id = req.params.id
+
+        if (!name && !price && !description && is_available === undefined) {
+            return res.status(400).json({error: "Au moins un champ requis"});
+        }
+        if (price) {
+            if (typeof price !== 'number' || price <= 0) {
+                return res.status(400).json({error: 'price must be a positive number'})
+            }
+        }
+
+        if (name) {
+            if (name.length < 2) {
+                return res.status(400).json({error: 'name must be at least 2 characters'})
+            }
+            if (name.length > 45) {
+                return res.status(400).json({error: 'name must be less than 45 characters'})
+            }
+        }
+
+        if (description) {
+            if (description.length > 45) {
+                return res.status(400).json({error: 'description must be less than 45 characters'})
+            }
+        }
+        if (is_available !== undefined) {
+            if (typeof is_available !== 'boolean') {
+                return res.status(400).json({error: 'is_available must be a boolean'})
+            }
+        }
+        const meal = await updateMeal(id, name, price, description, is_available)
+        return res.status(200).json(meal)
+
     } catch (error) {
         next(error)
     }
