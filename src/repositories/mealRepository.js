@@ -22,3 +22,11 @@ export async function findMealByName(name) {
     )
     return result[0] ?? null
 }
+
+export async function findMealByID(id) {
+    const [result] = await pool.execute(
+        'Select * from meal where id=?',
+        [id]
+    )
+    return result[0] ?? null
+}
