@@ -5,10 +5,12 @@ Title : mealRoute.js
 Desc : Route for the meal
 */
 import { Router } from "express";
-import { createMeal } from "../controllers/mealController.js";
+import {createMeal, modifyMeal} from "../controllers/mealController.js";
 
 const router = Router();
 
 router.post("/", createMeal);
+
+router.patch("/:id", modifyMeal);
 
 export default router;
