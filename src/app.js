@@ -1,9 +1,13 @@
 import express from "express";
+import orderRoute from "./routes/orderRoute.js";
+
 import errorMiddleware from './middlewares/errorMiddleware.js'
 import mealRouter from "./routes/mealRoute.js";
 const app = express();
 
 app.use(express.json());
+
+app.use("/api/orders", orderRoute);
 
 app.use("/meals", mealRouter);
 
