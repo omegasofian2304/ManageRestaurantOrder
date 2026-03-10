@@ -48,3 +48,16 @@ export async function patchMeal(id, name =null, price= null, description= null, 
     )
     return findMealByID(id)
 }
+
+export async function findAllMeals(isAvailable = undefined) {
+    if (isAvailable !== undefined) {
+        const [result] = await pool.execute(
+            'SELECT * FROM meal WHERE is_available = ?',
+            [isAvailable]
+        )
+        return result
+    }
+    const [result] = await pool.execute('SELECT * FROM meal')
+    return result
+}
+

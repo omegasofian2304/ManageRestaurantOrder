@@ -4,7 +4,7 @@ Date : 04.03.2026
 Title : mealRepository.js
 Desc : Business logic for meal
 */
-import { createMeal, findMealByName, findMealByID, patchMeal } from "../repositories/mealRepository.js"
+import {createMeal, findMealByName, findMealByID, patchMeal, findAllMeals} from "../repositories/mealRepository.js"
 
 export async function addMeal(name, price, description = null) {
     const existingMeal = await findMealByName(name)
@@ -36,4 +36,8 @@ export async function updateMeal(id, name=null, price=null, description=null, is
 
     return await patchMeal(id, name, price, description, is_available)
 
+}
+
+export async function getAllMeals(isAvailable) {
+    return await findAllMeals(isAvailable);
 }
