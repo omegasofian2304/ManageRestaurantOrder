@@ -4,7 +4,7 @@ Date : 04.03.2026
 Title : mealController.js
 Desc : File containing all functions for the meal table
 */
-import {addMeal, updateMeal} from "../services/mealService.js"
+import {addMeal, getAllMeals, updateMeal} from "../services/mealService.js"
 
 export async function createMeal(req, res, next) {
     try {
@@ -31,7 +31,7 @@ export async function modifyMeal(req, res, next){
         const id = req.params.id
 
         if (!name && !price && !description && is_available === undefined) {
-            return res.status(400).json({error: "Au moins un champ requis"});
+            return res.status(400).json({error: "At least one field is required"});
         }
         if (price) {
             if (typeof price !== 'number' || price <= 0) {
@@ -61,6 +61,30 @@ export async function modifyMeal(req, res, next){
         const meal = await updateMeal(id, name, price, description, is_available)
         return res.status(200).json(meal)
 
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function getMeals(req, res, next){
+    try {
+        let available = req.query.available
+
+        if (available !== undefined) {
+            available = available.toLowerCase()
+            if (available === "true") {
+                available = 1
+            }
+            else if (available === "false") {
+                available = 0
+            }
+            else {
+                return res.status(400).json({error: 'available must be a boolean'})
+            }
+        }
+
+        const meals = await getAllMeals(available)
+        return res.status(200).json(meals)
     } catch (error) {
         next(error)
     }
