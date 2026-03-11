@@ -1,5 +1,12 @@
-import { createOrder as createOrderService } from "../services/orderServices.js";
+/*
+Author : Milo Soupper
+Date : 04.03.2026
+Title : orderRepository.js
+Desc : File containing all function for the order table
+*/
 
+import { createOrder as createOrderService } from "../services/orderServices.js";
+import {findAllOrder} from "../services/orderServices.js";
 export const create = async (req, res,next) => {
     try {
         const { clientName, served, price, employee_id } = req.body
@@ -38,5 +45,16 @@ export const create = async (req, res,next) => {
     } catch (error) {
         next(error)
 
+    }
+}
+export const getAllOrders = async (req, res, next) => {
+    try {
+        const orders = await findAllOrder();
+        if (!orders) {
+            return res.status(404).json({ message: "No orders found" });
+        }
+        res.json(orders);
+    } catch (err) {
+        next(err);
     }
 };
