@@ -6,7 +6,7 @@ Desc : File containing all function for the order table
 */
 
 import { createOrder as createOrderService } from "../services/orderServices.js";
-import {findAllOrder} from "../repositories/orderRepository.js";
+import {findAllOrder} from "../services/orderServices.js";
 export const create = async (req, res,next) => {
     try {
         const { clientName, served, price, employee_id } = req.body
