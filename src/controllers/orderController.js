@@ -13,6 +13,7 @@ import { getOrderDetail} from "../services/orderServices.js";
 
 export const create = async (req, res,next) => {
     try {
+        console.log("Test")
         const { clientName, served, price, employee_id } = req.body
         console.log(req.body);
         if (clientName  === undefined) {
@@ -35,8 +36,6 @@ export const create = async (req, res,next) => {
         else if (typeof served !== 'boolean') {
             return res.status(400).json({ error: 'served must be a boolean' })
         }
-        if (!price === undefined) {
-            return res.status(400).json({ error: 'price order required' })
 
         if (typeof price !== 'number' || price <= 0) {
             return res.status(400).json({ error: 'price must be a positive number' })
@@ -60,7 +59,6 @@ export const getOrder = async (req, res, next) => {
         next(error)
     }
 };
-
 
 
 export const serveOrder = async (req, res, next) => {
@@ -105,4 +103,3 @@ export const getAllOrders = async (req, res, next) => {
         next(err);
     }
 };
-}
