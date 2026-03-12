@@ -1,4 +1,5 @@
 import { createOrder as createOrderService } from "../services/orderServices.js";
+import { getOrderDetail} from "../services/orderServices.js";
 
 export const create = async (req, res,next) => {
     try {
@@ -40,3 +41,13 @@ export const create = async (req, res,next) => {
 
     }
 };
+
+export const getOrder = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        const order = await getOrderDetail(id)
+        return res.status(200).json(order)
+    } catch (error) {
+        next(error)
+    }
+}
