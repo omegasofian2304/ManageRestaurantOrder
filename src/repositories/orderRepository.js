@@ -46,3 +46,8 @@ export const serveOrder = async (id) => {
 
     return result.affectedRows > 0;
 };
+
+export const findAllOrder = async () => {
+    const [rows] = await pool.execute('SELECT * FROM customer_order');
+    return rows.length > 0 ? rows : null;
+}

@@ -1,7 +1,14 @@
+/*
+Author : Milo Soupper
+Date : 04.03.2026
+Title : orderRepository.js
+Desc : File containing all sql request for the order table
+*/
 import {createOrder as createOrderService} from "../services/orderServices.js";
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
+import {findAllOrder} from "../services/orderServices.js";
 
 
 export const create = async (req, res,next) => {
@@ -73,5 +80,17 @@ export const serveOrder = async (req, res, next) => {
         res.status(200).json({ message: 'Order served', data: result });
     } catch (error) {
         next(error)
+    }
+};
+
+export const getAllOrders = async (req, res, next) => {
+    try {
+        const orders = await findAllOrder();
+        if (!orders) {
+            return res.status(404).json({ message: "No orders found" });
+        }
+        res.json(orders);
+    } catch (err) {
+        next(err);
     }
 };
