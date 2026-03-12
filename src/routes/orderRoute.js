@@ -6,12 +6,14 @@ Desc : File containing all route for the order table
 */
 import {serveOrder} from "../controllers/orderController.js";
 import { Router } from "express";
-import {create, getAllOrders} from "../controllers/orderController.js";
+import {create, getAllOrders, getOrder} from "../controllers/orderController.js";
 
 
 const router = Router();
 
 router.post("/", create);
+
+router.get("/:id", getOrder)
 
 router.get("/", getAllOrders)
 

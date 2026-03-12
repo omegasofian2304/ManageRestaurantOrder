@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/api/orders", orderRoute);
+app.use("/orders", orderRoute);
 
 app.use("/meals", mealRouter);
 
