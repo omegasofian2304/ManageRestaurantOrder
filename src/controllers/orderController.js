@@ -10,6 +10,7 @@ import { findOrderById as findOrderByIdService } from "../services/orderServices
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
 import {findAllOrder} from "../services/orderServices.js";
 import { getOrderDetail} from "../services/orderServices.js";
+import {findMealByID} from "../repositories/mealRepository.js";
 
 export const create = async (req, res,next) => {
     try {
@@ -103,3 +104,43 @@ export const getAllOrders = async (req, res, next) => {
         next(err);
     }
 };
+
+export async function addMealToAnOrderController(req, res, next) {
+    try {
+        const { meals } = req.body
+
+        const { orderId } = req.params
+
+        const order = await createOrderService(orderId);
+
+        if (!Array.isArray(meals) || meals.length === 0) {
+            return res.status(400).json({ error: 'Meals must be a non-empty array' })
+        }
+
+        for (const meal of meals) {
+            if (typeof meal.id !== 'number' || meal.id <= 0) {
+                return res.status(400).json({ error: 'ID must be a positive number' })
+            }
+        }
+
+
+        for (const meal of meals) {
+            if (typeof meal.id !== 'number' || meal.id <= 0) {
+                return res.status(400).json({ error: 'ID must be a positive number' })
+            }
+
+            if (typeof meal.quantity !== 'number' || meal.quantity <= 0) {
+                return res.status(400).json({ error: 'Quantity must be more than 0' })
+            }
+
+            if (await findMealByID(meal.id) === undefined) {
+                return res.status(400).json({ error: `Meal ${meal.id} not found` })
+            }
+        }
+
+        return addMealToAnOrderController(meals, orderId)
+
+    } catch (error) {
+        next(error)
+    }
+}

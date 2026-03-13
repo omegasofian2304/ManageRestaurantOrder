@@ -5,13 +5,11 @@ Title : orderRepository.js
 Desc : Business logic for the order table
 */
 
-import{findAllOrder as findAllOrders} from "../repositories/orderRepository.js";
+import{ findAllOrder as findAllOrders } from "../repositories/orderRepository.js";
 import { createOrder as createOrderRepository, serveOrder as serveOrderRepository } from "../repositories/orderRepository.js";
 import { findOrderById as findOrderByIdRepository } from "../repositories/orderRepository.js";
-import {findOrderWithMeals as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
-
-import { createOrder as createOrderRepository } from "../repositories/orderRepository.js";
-import { findOrderById, findMealsByOrderId} from "../repositories/orderRepository.js";
+import { findOrderWithMeals as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
+import { findMealsByOrderId} from "../repositories/orderRepository.js";
 
 export const createOrder = async (data) => {
     return createOrderRepository(data);
@@ -44,9 +42,7 @@ export const getOrderDetail = async (id) => {
     }
     const meals = await findMealsByOrderId(id)
 
-    const total_price = meals.reduce((sum, meal) => {
-        return sum + parseFloat(meal.unit_price) * meal.quantity
-    }, 0)
+    const total_price = order.total_price
 
     return {
         id: order.id,
@@ -62,4 +58,15 @@ export const getOrderDetail = async (id) => {
             quantity: m.quantity
         }))
     }
+}
+
+export async function addMealToAnOrderService(meals, orderId) {
+    const order = await findOrderById(orderId);
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.status = 404
+        throw error
+    }
+
 }
