@@ -4,7 +4,11 @@ Date : 04.03.2026
 Title : orderRepository.js
 Desc : File containing all sql request for the order table
 */
-import {addMealToAnOrderService, createOrder as createOrderService} from "../services/orderServices.js";
+import {
+    addMealToAnOrderService,
+    createOrder as createOrderService,
+    updateMealQuantityService
+} from "../services/orderServices.js";
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
@@ -130,6 +134,25 @@ export async function addMealToAnOrderController(req, res, next) {
 
         await addMealToAnOrderService(meals, orderId)
         return res.status(200).json({ message: 'Meals added successfully' })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function updateMealQuantityController(req, res, next) {
+    try {
+        const orderId = req.params.id
+        const mealId = req.params.mealId
+
+        const { quantity } = req.body
+
+        if (typeof quantity !== 'number' || quantity < 1) {
+            return res.status(400).json({ error: 'quantity must be a positive number' })
+        }
+
+        await updateMealQuantityService(orderId, mealId, quantity)
+        return res.status(200).json({ message: 'Meal quantity updated successfully' })
 
     } catch (error) {
         next(error)
