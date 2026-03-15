@@ -4,18 +4,17 @@ Date : 04.03.2026
 Title : orderRepository.js
 Desc : File containing all sql request for the order table
 */
-import {createOrder as createOrderService} from "../services/orderServices.js";
+import {addMealToAnOrderService, createOrder as createOrderService} from "../services/orderServices.js";
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
 import {findAllOrder} from "../services/orderServices.js";
 import { getOrderDetail} from "../services/orderServices.js";
+import {findMealByID} from "../repositories/mealRepository.js";
 
 export const create = async (req, res,next) => {
     try {
-        console.log("Test")
         const { clientName, served, price, employee_id } = req.body
-        console.log(req.body);
         if (clientName  === undefined) {
             return res.status(400).json({ error: 'clientName order required' })
         }
@@ -103,3 +102,37 @@ export const getAllOrders = async (req, res, next) => {
         next(err);
     }
 };
+
+export async function addMealToAnOrderController(req, res, next) {
+    try {
+        const { meals } = req.body
+
+        const orderId = req.params.id
+
+
+        if (!Array.isArray(meals) || meals.length === 0) {
+            return res.status(400).json({ error: 'Meals must be a non-empty array' })
+        }
+
+        for (const meal of meals) {
+            if (typeof meal.id !== 'number' || meal.id <= 0) {
+                return res.status(400).json({ error: 'ID must be a positive number' })
+            }
+
+            if (typeof meal.quantity !== 'number' || meal.quantity <= 0) {
+                return res.status(400).json({ error: 'Quantity must be more than 0' })
+            }
+
+            if (!await findMealByID(meal.id)) {
+                return res.status(400).json({ error: `Meal ${meal.id} not found` })
+            }
+        }
+
+        await addMealToAnOrderService(meals, orderId)
+        return res.status(200).json({ message: 'Meals added successfully' })
+
+    } catch (error) {
+        next(error)
+    }
+}
+

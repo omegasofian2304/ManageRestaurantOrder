@@ -5,13 +5,16 @@ Title : orderRepository.js
 Desc : Business logic for the order table
 */
 
-import{findAllOrder as findAllOrders} from "../repositories/orderRepository.js";
+import {
+    addMealToAnOrderRepository,
+    findAllOrder as findAllOrders,
+    updateMealQuantityInOrderRepository, updateOrderPrice
+} from "../repositories/orderRepository.js";
 import { createOrder as createOrderRepository, serveOrder as serveOrderRepository } from "../repositories/orderRepository.js";
 import { findOrderById as findOrderByIdRepository } from "../repositories/orderRepository.js";
-import {findOrderWithMeals as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
-
-import { createOrder as createOrderRepository } from "../repositories/orderRepository.js";
-import { findOrderById, findMealsByOrderId} from "../repositories/orderRepository.js";
+import { findOrderWithMeals as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
+import { findMealsByOrderId} from "../repositories/orderRepository.js";
+import {findMealByID} from "../repositories/mealRepository.js";
 
 export const createOrder = async (data) => {
     return createOrderRepository(data);
@@ -44,9 +47,7 @@ export const getOrderDetail = async (id) => {
     }
     const meals = await findMealsByOrderId(id)
 
-    const total_price = meals.reduce((sum, meal) => {
-        return sum + parseFloat(meal.unit_price) * meal.quantity
-    }, 0)
+    const total_price = order.total_price
 
     return {
         id: order.id,
@@ -62,4 +63,63 @@ export const getOrderDetail = async (id) => {
             quantity: m.quantity
         }))
     }
+}
+
+export async function addMealToAnOrderService(meals, orderId) {
+    const order = await findOrderById(orderId);
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.status = 404
+        throw error
+    }
+
+    if (order.order_served) {
+        const error = new Error("Order is already served")
+        error.status = 409
+        throw error
+    }
+
+    const dbMeals = []
+
+    for (const meal of meals) {
+        const dbMeal = await findMealByID(meal.id)
+        if (!dbMeal) {
+            const error = new Error(`Meal ${meal.id} not found`)
+            error.status = 404
+            throw error
+        }
+        if (!dbMeal.is_available) {
+            const error = new Error(`${dbMeal.name} is not available`)
+            error.status = 422
+            throw error
+        }
+        // spread all DB meal properties and add quantity from request body
+        dbMeals.push({ ...dbMeal, quantity: meal.quantity })
+    }
+
+    let totalPrice = order.total_price
+
+    for (const meal of dbMeals) {
+        totalPrice += meal.price * meal.quantity
+    }
+
+    // round the price for having only 2 decimals
+    totalPrice = Math.round(totalPrice * 100) / 100
+
+    const orderMeals = await findMealsByOrderId(orderId)
+
+    for (const meal of dbMeals) {
+
+        const existing = orderMeals.find(om => om.meal_id === meal.id)
+
+        if (existing) {
+            await updateMealQuantityInOrderRepository(orderId, meal.id, existing.quantity + meal.quantity)
+        } else {
+            await addMealToAnOrderRepository(orderId, meal.id, meal.quantity)
+        }
+    }
+
+    // insert the total price
+    await updateOrderPrice(orderId, totalPrice)
 }

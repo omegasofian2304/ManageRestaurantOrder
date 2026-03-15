@@ -41,3 +41,7 @@ export async function updateMeal(id, name=null, price=null, description=null, is
 export async function getAllMeals(isAvailable) {
     return await findAllMeals(isAvailable);
 }
+
+export async function findMealByIDService(id) {
+    return await findMealByID(id);
+}
