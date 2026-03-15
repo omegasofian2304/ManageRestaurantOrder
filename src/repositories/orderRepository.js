@@ -43,7 +43,7 @@ export const findOrderWithMeals = async (id) => {
         [id]
     );
 
-    return rows; // tableau vide [] si pas de meals
+    return rows;
 };
 
 
@@ -63,6 +63,26 @@ export const findAllOrder = async () => {
     return rows.length > 0 ? rows : null;
 }
 
-export const addMealToAnOrderRepository = async (id) => {
+export const addMealToAnOrderRepository = async (orderId, mealId, quantity) => {
+    await pool.execute(
+        `INSERT INTO order_has_meal (order_id, meal_id, quantity) VALUES (?, ?, ?)`,
+        [orderId, mealId, quantity]
+    )
+}
 
+export const updateMealQuantityInOrderRepository = async (orderId, mealId, mealQuantity) => {
+    const [result] = await pool.execute(
+        `UPDATE order_has_meal
+        SET quantity = ? where order_id = ? and meal_id = ?`, [mealQuantity, orderId, mealId]
+    );
+
+    return result;
+}
+
+export const updateOrderPrice = async (orderId, totalPrice) => {
+    const [result] = await pool.execute(
+        `UPDATE customer_order
+        SET total_price = ?
+        where id = ?`, [totalPrice, orderId]
+    )
 }

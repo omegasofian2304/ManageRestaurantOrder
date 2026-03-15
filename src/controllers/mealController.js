@@ -99,7 +99,7 @@ export async function findMealByIdController(req, res, next){
             return res.status(400).json({error: 'id is required'})
         }
 
-        const meal = await findMealByIDService()
+        const meal = await findMealByIDService(id)
 
         if (!meal) {
             return res.status(404).json({error: 'meal not found'})
