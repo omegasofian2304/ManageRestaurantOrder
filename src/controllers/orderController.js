@@ -6,7 +6,7 @@ Desc : File containing all sql request for the order table
 */
 import {
     addMealToAnOrderService,
-    createOrder as createOrderService,
+    createOrder as createOrderService, deleteOrderService,
     updateMealQuantityService
 } from "../services/orderServices.js";
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
@@ -15,7 +15,7 @@ import {serveOrder as serveOrderService} from "../services/orderServices.js";
 import {removeMealFromOrderService} from "../services/orderServices.js";
 import {findAllOrder} from "../services/orderServices.js";
 import { getOrderDetail} from "../services/orderServices.js";
-import {findMealByID} from "../repositories/mealRepository.js";
+import {findMealByIDService} from "../services/mealService.js";
 
 export const create = async (req, res,next) => {
     try {
@@ -24,7 +24,7 @@ export const create = async (req, res,next) => {
             return res.status(400).json({ error: 'clientName order required' })
         }
         else if (clientName) {
-            if (clientName.length > 45) {
+            if (clientName.length > 45 || clientName.length < 2) {
                 return res.status(400).json({error: 'clientName must be less than 45 characters'})
             }
         }
@@ -128,7 +128,7 @@ export async function addMealToAnOrderController(req, res, next) {
                 return res.status(400).json({ error: 'Quantity must be more than 0' })
             }
 
-            if (!await findMealByID(meal.id)) {
+            if (!await findMealByIDService(meal.id)) {
                 return res.status(400).json({ error: `Meal ${meal.id} not found` })
             }
         }
@@ -166,3 +166,32 @@ export async function removeMealFromOrderController(req, res, next) {
     }
 }
 
+export async function updateMealQuantityController(req, res, next) {
+    try {
+        const orderId = req.params.id
+        const mealId = req.params.mealId
+        const { quantity } = req.body
+
+        if (typeof quantity !== 'number' || quantity < 1) {
+            return res.status(400).json({ error: 'quantity must be a positive number' })
+        }
+
+        await updateMealQuantityService(orderId, mealId, quantity)
+        return res.status(200).json({ message: 'Meal quantity updated successfully' })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function deleteOrderController(req, res, next) {
+    try {
+        const id = req.params.id
+
+        await deleteOrderService(id)
+        return res.status(204).send()
+
+    } catch (error) {
+        next(error)
+    }
+}

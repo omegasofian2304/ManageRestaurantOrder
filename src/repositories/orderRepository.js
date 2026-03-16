@@ -93,3 +93,10 @@ export const removeMealFromOrder = async (orderId, mealId) => {
         'DELETE FROM order_has_meal where order_id = ? and meal_id = ?', [orderId, mealId]
     )
 }
+
+export const deleteOrderRepository = async (id) => {
+    await pool.execute(
+        'DELETE FROM customer_order WHERE id = ?',
+        [id]
+    )
+}

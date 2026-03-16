@@ -4,7 +4,12 @@ Date : 04.03.2026
 Title : orderRepository.js
 Desc : File containing all route for the order table
 */
-import {addMealToAnOrderController, serveOrder, updateMealQuantityController} from "../controllers/orderController.js";
+import {
+    addMealToAnOrderController,
+    deleteOrderController,
+    serveOrder,
+    updateMealQuantityController
+} from "../controllers/orderController.js";
 import { Router } from "express";
 import {create, getAllOrders, getOrder} from "../controllers/orderController.js";
 import { removeMealFromOrderController } from "../controllers/orderController.js";
@@ -23,6 +28,8 @@ router.post("/:id/meals", addMealToAnOrderController)
 router.patch('/:id/status', serveOrder)
 
 router.delete('/:id/meals/:mealId', removeMealFromOrderController)
+
+router.delete("/:id", deleteOrderController)
 
 router.patch("/:id/meals/:mealId", updateMealQuantityController)
 
