@@ -8,7 +8,8 @@ Desc : Business logic for the order table
 import {
     addMealToAnOrderRepository,
     findAllOrder as findAllOrders,
-    updateMealQuantityInOrderRepository, updateOrderPrice
+    updateMealQuantityInOrderRepository, updateOrderPrice,
+    removeMealFromOrder as removeMealFromOrderRepository,
 } from "../repositories/orderRepository.js";
 import { createOrder as createOrderRepository, serveOrder as serveOrderRepository } from "../repositories/orderRepository.js";
 import { findOrderById as findOrderByIdRepository } from "../repositories/orderRepository.js";
@@ -168,6 +169,44 @@ export async function updateMealQuantityService(orderId, mealId, quantity) {
         totalPrice += meal.unit_price * meal.quantity
     }
     totalPrice = Math.round(totalPrice * 100) / 100
+
+    await updateOrderPrice(orderId, totalPrice)
+}
+
+
+export async function removeMealFromOrderService(mealId, orderId) {
+    const order = await findOrderById(orderId);
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.status = 404
+        throw error
+    }
+
+
+    if (order.order_served) {
+        const error = new Error("Order is already served")
+        error.status = 409
+        throw error
+    }
+
+
+    const orderMeals = await findMealsByOrderId(orderId)
+    const mealInOrder = orderMeals.find(om => om.meal_id === Number(mealId))
+
+    if (!mealInOrder) {
+        const error = new Error("Meal not found in this order")
+        error.status = 404
+        throw error
+    }
+
+
+    await removeMealFromOrderRepository(orderId, mealId)
+
+
+    let totalPrice = order.total_price - (mealInOrder.unit_price * mealInOrder.quantity)
+    totalPrice = Math.round(totalPrice * 100) / 100
+
 
     await updateOrderPrice(orderId, totalPrice)
 }

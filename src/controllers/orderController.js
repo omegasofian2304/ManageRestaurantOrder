@@ -12,6 +12,7 @@ import {
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
+import {removeMealFromOrderService} from "../services/orderServices.js";
 import {findAllOrder} from "../services/orderServices.js";
 import { getOrderDetail} from "../services/orderServices.js";
 import {findMealByID} from "../repositories/mealRepository.js";
@@ -140,19 +141,25 @@ export async function addMealToAnOrderController(req, res, next) {
     }
 }
 
-export async function updateMealQuantityController(req, res, next) {
+
+export async function removeMealFromOrderController(req, res, next) {
     try {
-        const orderId = req.params.id
-        const mealId = req.params.mealId
+        const { id, mealId } = req.params
 
-        const { quantity } = req.body
 
-        if (typeof quantity !== 'number' || quantity < 1) {
-            return res.status(400).json({ error: 'quantity must be a positive number' })
+        if (isNaN(id) || Number(id) <= 0) {
+            return res.status(400).json({ error: 'Order ID must be a positive number' })
         }
 
-        await updateMealQuantityService(orderId, mealId, quantity)
-        return res.status(200).json({ message: 'Meal quantity updated successfully' })
+        if (isNaN(mealId) || Number(mealId) <= 0) {
+            return res.status(400).json({ error: 'Meal ID must be a positive number' })
+        }
+
+
+        await removeMealFromOrderService(mealId, id)
+
+
+        return res.status(200).json({ message: 'Meal removed successfully' })
 
     } catch (error) {
         next(error)

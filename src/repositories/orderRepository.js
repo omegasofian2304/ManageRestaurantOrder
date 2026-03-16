@@ -86,3 +86,10 @@ export const updateOrderPrice = async (orderId, totalPrice) => {
         where id = ?`, [totalPrice, orderId]
     )
 }
+
+
+export const removeMealFromOrder = async (orderId, mealId) => {
+    await pool.execute(
+        'DELETE FROM order_has_meal where order_id = ? and meal_id = ?', [orderId, mealId]
+    )
+}

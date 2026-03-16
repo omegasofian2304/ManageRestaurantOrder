@@ -7,6 +7,7 @@ Desc : File containing all route for the order table
 import {addMealToAnOrderController, serveOrder, updateMealQuantityController} from "../controllers/orderController.js";
 import { Router } from "express";
 import {create, getAllOrders, getOrder} from "../controllers/orderController.js";
+import { removeMealFromOrderController } from "../controllers/orderController.js";
 
 
 const router = Router();
@@ -19,7 +20,9 @@ router.get("/:id", getOrder)
 
 router.post("/:id/meals", addMealToAnOrderController)
 
-router.patch('/:id/status', serveOrder);
+router.patch('/:id/status', serveOrder)
+
+router.delete('/:id/meals/:mealId', removeMealFromOrderController)
 
 router.patch("/:id/meals/:mealId", updateMealQuantityController)
 
