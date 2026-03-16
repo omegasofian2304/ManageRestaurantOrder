@@ -22,6 +22,6 @@ router.post("/:id/meals", addMealToAnOrderController)
 
 router.patch('/:id/status', serveOrder);
 
-router.delete('/:id/meals:/mealId', removeMealFromOrderController);
+router.delete('/:id/meals/:mealId', removeMealFromOrderController);
 
 export default router;
