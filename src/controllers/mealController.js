@@ -122,7 +122,7 @@ export async function deleteMealController(req, res, next) {
         }
 
         await deleteMealService(id)
-        return res.status(204).send()
+        return res.status(200).json({ message: 'Meal deleted successfully' })
 
     } catch (error) {
         next(error)

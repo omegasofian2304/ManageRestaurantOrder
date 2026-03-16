@@ -189,8 +189,7 @@ export async function deleteOrderController(req, res, next) {
         const id = req.params.id
 
         await deleteOrderService(id)
-        return res.status(204).send()
-
+        return res.status(200).json({ message: 'Order deleted successfully' })
     } catch (error) {
         next(error)
     }
