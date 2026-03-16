@@ -8,6 +8,7 @@ import {addMealToAnOrderService, createOrder as createOrderService} from "../ser
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
+import {removeMealFromOrderService} from "../services/orderServices.js";
 import {findAllOrder} from "../services/orderServices.js";
 import { getOrderDetail} from "../services/orderServices.js";
 import {findMealByID} from "../repositories/mealRepository.js";
@@ -136,3 +137,27 @@ export async function addMealToAnOrderController(req, res, next) {
     }
 }
 
+
+export async function removeMealFromOrderController(req, res, next) {
+    try {
+        const { id, mealId } = req.params
+
+
+        if (isNaN(id) || Number(id) <= 0) {
+            return res.status(400).json({ error: 'Order ID must be a positive number' })
+        }
+
+        if (isNaN(mealId) || Number(mealId) <= 0) {
+            return res.status(400).json({ error: 'Meal ID must be a positive number' })
+        }
+
+
+        await removeMealFromOrderService(mealId, id)
+
+
+        return res.status(200).json({ message: 'Meal removed successfully' })
+
+    } catch (error) {
+        next(error)
+    }
+}
