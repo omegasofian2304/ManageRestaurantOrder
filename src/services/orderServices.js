@@ -83,6 +83,7 @@ export async function addMealToAnOrderService(meals, orderId) {
 
     const dbMeals = []
 
+    // Fetch meals from DB and check availability
     for (const meal of meals) {
         const dbMeal = await findMealByID(meal.id)
         if (!dbMeal) {
@@ -95,25 +96,25 @@ export async function addMealToAnOrderService(meals, orderId) {
             error.status = 422
             throw error
         }
-        // spread all DB meal properties and add quantity from request body
-        dbMeals.push({ ...dbMeal, quantity: meal.quantity })
+        // Spread all DB meal properties and add quantity from request body
+        dbMeals.push({...dbMeal, quantity: meal.quantity})
     }
 
-    let totalPrice = order.total_price
-
+    // Merge duplicate meals from the request
+    const mergedMeals = []
     for (const meal of dbMeals) {
-        totalPrice += meal.price * meal.quantity
+        const existing = mergedMeals.find(m => m.id === meal.id)
+        if (existing) {
+            existing.quantity += meal.quantity
+        } else {
+            mergedMeals.push({...meal})
+        }
     }
-
-    // round the price for having only 2 decimals
-    totalPrice = Math.round(totalPrice * 100) / 100
 
     const orderMeals = await findMealsByOrderId(orderId)
 
-    for (const meal of dbMeals) {
-
+    for (const meal of mergedMeals) {
         const existing = orderMeals.find(om => om.meal_id === meal.id)
-
         if (existing) {
             await updateMealQuantityInOrderRepository(orderId, meal.id, existing.quantity + meal.quantity)
         } else {
@@ -121,7 +122,54 @@ export async function addMealToAnOrderService(meals, orderId) {
         }
     }
 
-    // insert the total price
+    // Recalculate total price
+    const updatedMeals = await findMealsByOrderId(orderId)
+    let totalPrice = 0
+
+    for (const meal of updatedMeals) {
+        totalPrice += meal.unit_price * meal.quantity
+    }
+
+    totalPrice = Math.round(totalPrice * 100) / 100
+
+    await updateOrderPrice(orderId, totalPrice)
+}
+
+export async function updateMealQuantityService(orderId, mealId, quantity) {
+    const order = await findOrderById(orderId);
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.status = 404
+        throw error
+    }
+
+    if (order.order_served) {
+        const error = new Error("Order is already served")
+        error.status = 409
+        throw error
+    }
+
+    const orderMeals = await findMealsByOrderId(orderId)
+
+    const existing = orderMeals.find(om => om.meal_id == mealId)
+    if (!existing) {
+        const error = new Error("Meal not found in this order")
+        error.status = 404
+        throw error
+    }
+
+    // Update the meal quantity
+    await updateMealQuantityInOrderRepository(orderId, mealId, quantity)
+
+    // Recalculate total price
+    const updatedMeals = await findMealsByOrderId(orderId)
+    let totalPrice = 0
+    for (const meal of updatedMeals) {
+        totalPrice += meal.unit_price * meal.quantity
+    }
+    totalPrice = Math.round(totalPrice * 100) / 100
+
     await updateOrderPrice(orderId, totalPrice)
 }
 

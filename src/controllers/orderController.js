@@ -4,7 +4,11 @@ Date : 04.03.2026
 Title : orderRepository.js
 Desc : File containing all sql request for the order table
 */
-import {addMealToAnOrderService, createOrder as createOrderService} from "../services/orderServices.js";
+import {
+    addMealToAnOrderService,
+    createOrder as createOrderService,
+    updateMealQuantityService
+} from "../services/orderServices.js";
 import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
 import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
 import {serveOrder as serveOrderService} from "../services/orderServices.js";
@@ -161,3 +165,4 @@ export async function removeMealFromOrderController(req, res, next) {
         next(error)
     }
 }
+
