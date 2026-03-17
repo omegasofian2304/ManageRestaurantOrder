@@ -34,11 +34,14 @@ export const findMealsByOrderIdRepository = async (orderId) => {
 
 export const findOrderByIdRepository = async (id) => {
 
-        const [result] = await pool.execute(
-            'Select * from customer_order where id=?',
-            [id]
-        )
-        return result[0] ?? null
+    const [result] = await pool.execute(
+        `SELECT co.*, e.first_name, e.last_name
+         FROM customer_order co
+         JOIN employee e ON e.id = co.employee_id
+         WHERE co.id = ?`,
+        [id]
+    )
+    return result[0] ?? null
 }
 
 
@@ -65,7 +68,12 @@ export const serveOrderRepository = async (id) => {
 };
 
 export const getAllOrdersRepository = async () => {
-    const [rows] = await pool.execute('SELECT * FROM customer_order');
+    const [rows] = await pool.execute(
+        `SELECT co.*, e.first_name, e.last_name
+         FROM customer_order co
+         JOIN employee e ON e.id = co.employee_id
+         ORDER BY co.creation_date DESC`
+    );
     return rows.length > 0 ? rows : null;
 }
 

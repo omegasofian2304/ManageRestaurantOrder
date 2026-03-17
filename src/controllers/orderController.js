@@ -13,7 +13,7 @@ import { findMealByIDService } from "../services/mealService.js";
 
 export const createOrderController = async (req, res, next) => {
     try {
-        const { clientName, served, price, employee_id } = req.body
+        const { clientName, employee_id } = req.body
         if (clientName  === undefined) {
             return res.status(400).json({ error: 'clientName order required' })
         }
@@ -22,26 +22,24 @@ export const createOrderController = async (req, res, next) => {
                 return res.status(400).json({error: 'clientName must be less than 45 characters'})
             }
         }
-        if (served  === undefined) {
-            return res.status(400).json({ error: 'served  order required' })
-        }
+
         if (employee_id === undefined) {
             return res.status(400).json({ error: 'employee_id order required' })
         }
         else if (typeof employee_id !== 'number') {
             return res.status(400).json({ error: 'employee_id must be a positive number' })
         }
-        else if (typeof served !== 'boolean') {
-            return res.status(400).json({ error: 'served must be a boolean' })
-        }
 
-        if (typeof price !== 'number' || price <= 0) {
-            return res.status(400).json({ error: 'price must be a positive number' })
-        }
+        // set default price to 0
+        const price = 0
+
+        // set an order unserved by default
+        const served = 0
 
         const order = { clientName, served, price, employee_id }
-        await createOrderService(order);
-        return res.status(201).json(order);
+
+        const result = await createOrderService(order);
+        return res.status(201).json(result);
     } catch (error) {
         next(error)
 
@@ -64,6 +62,8 @@ export const serveOrderController = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        const { order_served } = req.body
+
         const order = await findOrderByIdService(id);
 
         if (!order){
@@ -75,13 +75,15 @@ export const serveOrderController = async (req, res, next) => {
             return res.status(409).json({error : "Order has already been served"});
         }
 
+        if (order_served === undefined || order_served !== 1) {
+            return res.status(400).json({ error: 'order_served must be 1' })
+        }
 
         const meals = await findOrderWithMealsService(id);
 
         if (!meals || meals.length === 0){
             return res.status(422).json({error: "No meals found in the order"})
         }
-
 
         const result = await serveOrderService(id);
         res.status(200).json({ message: 'Order served', data: result });
@@ -114,7 +116,7 @@ export async function addMealToAnOrderController(req, res, next) {
         }
 
         for (const meal of meals) {
-            if (typeof meal.id !== 'number' || meal.id <= 0) {
+            if (typeof meal.meal_id !== 'number' || meal.meal_id <= 0) {
                 return res.status(400).json({ error: 'ID must be a positive number' })
             }
 
@@ -122,8 +124,8 @@ export async function addMealToAnOrderController(req, res, next) {
                 return res.status(400).json({ error: 'Quantity must be more than 0' })
             }
 
-            if (!await findMealByIDService(meal.id)) {
-                return res.status(400).json({ error: `Meal ${meal.id} not found` })
+            if (!await findMealByIDService(meal.meal_id)) {
+                return res.status(400).json({ error: `Meal ${meal.meal_id} not found` })
             }
         }
 
@@ -140,11 +142,11 @@ export async function removeMealFromOrderController(req, res, next) {
     try {
         const { id, mealId } = req.params
 
-        if (typeof id !== 'number' || id <= 0) {
+        if (isNaN(id) || Number(id) <= 0) {
             return res.status(400).json({ error: 'Order ID must be a positive number' })
         }
 
-        if (typeof mealId !== 'number' || mealId <= 0) {
+        if (isNaN(mealId) || Number(mealId) <= 0) {
             return res.status(400).json({ error: 'Meal ID must be a positive number' })
         }
 
@@ -165,6 +167,14 @@ export async function updateMealQuantityController(req, res, next) {
 
         if (typeof quantity !== 'number' || quantity < 1) {
             return res.status(400).json({ error: 'quantity must be a positive number' })
+        }
+
+        if (isNaN(orderId) || Number(orderId) <= 0) {
+            return res.status(400).json({ error: 'Order ID must be a positive number' })
+        }
+
+        if (isNaN(mealId) || Number(mealId) <= 0) {
+            return res.status(400).json({ error: 'Meal ID must be a positive number' })
         }
 
         await updateMealQuantityService(orderId, mealId, quantity)

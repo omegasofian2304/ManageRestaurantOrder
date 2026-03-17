@@ -87,9 +87,9 @@ export async function addMealToAnOrderService(meals, orderId) {
 
     // Fetch meals from DB and check availability
     for (const meal of meals) {
-        const dbMeal = await findMealByIDRepository(meal.id)
+        const dbMeal = await findMealByIDRepository(meal.meal_id)
         if (!dbMeal) {
-            const error = new Error(`Meal ${meal.id} not found`)
+            const error = new Error(`Meal ${meal.meal_id} not found`)
             error.status = 404
             throw error
         }
