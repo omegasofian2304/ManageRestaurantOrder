@@ -4,7 +4,7 @@ Date : 04.03.2026
 Title : mealController.js
 Desc : File containing all functions for the meal table
 */
-import {addMeal, findMealByIDService, getAllMeals, updateMeal} from "../services/mealService.js"
+import {addMeal, deleteMealService, findMealByIDService, getAllMeals, updateMeal} from "../services/mealService.js"
 
 export async function createMeal(req, res, next) {
     try {
@@ -106,6 +106,24 @@ export async function findMealByIdController(req, res, next){
         }
 
         return res.status(200).json(meal)
+    } catch (error) {
+        next(error)
+    }
+}
+
+export async function deleteMealController(req, res, next) {
+    try {
+        const id = req.params.id
+
+        const meal = await findMealByIDService(id)
+
+        if (!meal) {
+            return res.status(404).json({ error: 'Meal not found' })
+        }
+
+        await deleteMealService(id)
+        return res.status(200).json({ message: 'Meal deleted successfully' })
+
     } catch (error) {
         next(error)
     }

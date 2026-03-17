@@ -5,7 +5,13 @@ Title : mealRoute.js
 Desc : Route for the meal
 */
 import { Router } from "express";
-import {createMeal, findMealByIdController, getMeals, modifyMeal} from "../controllers/mealController.js";
+import {
+    createMeal,
+    deleteMealController,
+    findMealByIdController,
+    getMeals,
+    modifyMeal
+} from "../controllers/mealController.js";
 
 const router = Router();
 
@@ -17,5 +23,6 @@ router.post("/", createMeal);
 
 router.patch("/:id", modifyMeal);
 
+router.delete("/:id", deleteMealController);
 
 export default router;

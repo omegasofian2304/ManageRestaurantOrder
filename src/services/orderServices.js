@@ -9,7 +9,7 @@ import {
     addMealToAnOrderRepository,
     findAllOrder as findAllOrders,
     updateMealQuantityInOrderRepository, updateOrderPrice,
-    removeMealFromOrder as removeMealFromOrderRepository,
+    removeMealFromOrder as removeMealFromOrderRepository, deleteOrderRepository,
 } from "../repositories/orderRepository.js";
 import { createOrder as createOrderRepository, serveOrder as serveOrderRepository } from "../repositories/orderRepository.js";
 import { findOrderById as findOrderByIdRepository } from "../repositories/orderRepository.js";
@@ -209,4 +209,22 @@ export async function removeMealFromOrderService(mealId, orderId) {
 
 
     await updateOrderPrice(orderId, totalPrice)
+}
+
+export async function deleteOrderService(id) {
+    const order = await findOrderById(id)
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.status = 404
+        throw error
+    }
+
+    if (order.order_served) {
+        const error = new Error("Order is already served")
+        error.status = 409
+        throw error
+    }
+
+    await deleteOrderRepository(id)
 }

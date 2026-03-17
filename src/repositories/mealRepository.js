@@ -61,3 +61,19 @@ export async function findAllMeals(isAvailable = undefined) {
     return result
 }
 
+export async function findMealInActiveOrder(id) {
+    const [result] = await pool.execute(
+        `SELECT ohm.meal_id FROM order_has_meal ohm
+         JOIN customer_order co ON co.id = ohm.order_id
+         WHERE ohm.meal_id = ? AND co.order_served = 0`,
+        [id]
+    )
+    return result[0] ?? null
+}
+
+export async function deleteMealRepository(id) {
+    await pool.execute(
+        'DELETE FROM meal WHERE id = ?',
+        [id]
+    )
+}
