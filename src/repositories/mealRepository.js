@@ -1,5 +1,5 @@
 /*
-Author : Sofian Hussein
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
 Title : mealRepository.js
 Desc : Database queries for meals

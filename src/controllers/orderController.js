@@ -1,21 +1,15 @@
 /*
-Author : Milo Soupper
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
 Title : orderRepository.js
-Desc : File containing all sql request for the order table
+Desc : File containing all controllers for the orders
 */
 import {
-    addMealToAnOrderService,
-    createOrderService as createOrderService, deleteOrderService,
-    updateMealQuantityService
+    addMealToAnOrderService, createOrderService, deleteOrderService, updateMealQuantityService,
+    findOrderWithMealsService, findOrderByIdService, serveOrderService, removeMealFromOrderService,
+    getAllOrdersService, getOrderDetailService
 } from "../services/orderService.js";
-import { findOrderWithMealsService as findOrderWithMealsService} from "../services/orderService.js";
-import { findOrderByIdService as findOrderByIdService } from "../services/orderService.js";
-import {serveOrderService as serveOrderService} from "../services/orderService.js";
-import {removeMealFromOrderService} from "../services/orderService.js";
-import {getAllOrdersService} from "../services/orderService.js";
-import { getOrderDetailService} from "../services/orderService.js";
-import {findMealByIDService} from "../services/mealService.js";
+import { findMealByIDService } from "../services/mealService.js";
 
 export const createOrderController = async (req, res, next) => {
     try {

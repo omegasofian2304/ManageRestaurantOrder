@@ -1,8 +1,8 @@
 /*
-Author : Sofian Hussein
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 05.03.2026
 Title : mealRoutes.js
-Desc : Route for the meal
+Desc : File containing all route for the meals
 */
 import { Router } from "express";
 import {

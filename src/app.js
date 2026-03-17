@@ -1,3 +1,9 @@
+/*
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
+Date : 04.03.2026
+Title : app.js
+Desc : This file is the entry point of the application
+*/
 import express from "express";
 import orderRoute from "./routes/orderRoutes.js";
 

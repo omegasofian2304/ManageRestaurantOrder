@@ -1,10 +1,11 @@
 /*
-Author : Sofian Hussein
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
 Title : mealController.js
-Desc : File containing all functions for the meal table
+Desc : File containing all controllers for the meals
 */
-import {createMealService, deleteMealService, findMealByIDService, findAllMealsService, updateMealService} from "../services/mealService.js"
+import {createMealService, deleteMealService, findMealByIDService, findAllMealsService, updateMealService}
+from "../services/mealService.js"
 
 export async function createMealController(req, res, next) {
     try {

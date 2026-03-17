@@ -1,21 +1,23 @@
 /*
-Author : Milo Soupper
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
-Title : orderRepository.js
-Desc : Business logic for the order table
+Title : orderService.js
+Desc : Business logic for the orders
 */
-
 import {
     addMealToAnOrderRepository,
-    getAllOrdersRepository as findAllOrders,
-    updateMealQuantityRepository, updateOrderPriceRepository,
-    removeMealFromOrderRepository as removeMealFromOrderRepository, deleteOrderRepository, getAllOrdersRepository,
+    updateMealQuantityRepository,
+    updateOrderPriceRepository,
+    removeMealFromOrderRepository,
+    deleteOrderRepository,
+    getAllOrdersRepository,
+    createOrderRepository,
+    serveOrderRepository,
+    findOrderByIdRepository,
+    findOrderWithMealsRepository,
+    findMealsByOrderIdRepository,
 } from "../repositories/orderRepository.js";
-import { createOrderRepository as createOrderRepository, serveOrderRepository as serveOrderRepository } from "../repositories/orderRepository.js";
-import { findOrderByIdRepository as findOrderByIdRepository } from "../repositories/orderRepository.js";
-import { findOrderWithMealsRepository as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
-import { findMealsByOrderIdRepository} from "../repositories/orderRepository.js";
-import {findMealByIDRepository} from "../repositories/mealRepository.js";
+import { findMealByIDRepository } from "../repositories/mealRepository.js";
 
 export const createOrderService = async (data) => {
     return createOrderRepository(data);

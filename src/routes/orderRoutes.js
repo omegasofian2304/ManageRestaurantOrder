@@ -1,18 +1,20 @@
 /*
-Author : Milo Soupper
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
-Title : orderRepository.js
-Desc : File containing all route for the order table
+Title : orderRoutes.js
+Desc : File containing all route for the orders
 */
 import {
     addMealToAnOrderController,
     deleteOrderController,
     serveOrderController,
-    updateMealQuantityController
+    updateMealQuantityController,
+    createOrderController,
+    getAllOrdersController,
+    getOrderController,
+    removeMealFromOrderController
 } from "../controllers/orderController.js";
 import { Router } from "express";
-import {createOrderController, getAllOrdersController, getOrderController} from "../controllers/orderController.js";
-import { removeMealFromOrderController } from "../controllers/orderController.js";
 
 
 const router = Router();
