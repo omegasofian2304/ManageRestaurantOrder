@@ -6,22 +6,22 @@ Desc : Route for the meal
 */
 import { Router } from "express";
 import {
-    createMeal,
+    createMealController,
     deleteMealController,
     findMealByIdController,
-    getMeals,
-    modifyMeal
+    findAllMealsController,
+    updateMealController
 } from "../controllers/mealController.js";
 
 const router = Router();
 
-router.get("/", getMeals);
+router.get("/", findAllMealsController);
 
 router.get("/:id", findMealByIdController);
 
-router.post("/", createMeal);
+router.post("/", createMealController);
 
-router.patch("/:id", modifyMeal);
+router.patch("/:id", updateMealController);
 
 router.delete("/:id", deleteMealController);
 

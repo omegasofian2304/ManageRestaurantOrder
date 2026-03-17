@@ -15,7 +15,7 @@ import { createOrderRepository as createOrderRepository, serveOrderRepository as
 import { findOrderByIdRepository as findOrderByIdRepository } from "../repositories/orderRepository.js";
 import { findOrderWithMealsRepository as findOrderWithMealsRepository} from "../repositories/orderRepository.js";
 import { findMealsByOrderIdRepository} from "../repositories/orderRepository.js";
-import {findMealByID} from "../repositories/mealRepository.js";
+import {findMealByIDRepository} from "../repositories/mealRepository.js";
 
 export const createOrderService = async (data) => {
     return createOrderRepository(data);
@@ -85,7 +85,7 @@ export async function addMealToAnOrderService(meals, orderId) {
 
     // Fetch meals from DB and check availability
     for (const meal of meals) {
-        const dbMeal = await findMealByID(meal.id)
+        const dbMeal = await findMealByIDRepository(meal.id)
         if (!dbMeal) {
             const error = new Error(`Meal ${meal.id} not found`)
             error.status = 404

@@ -4,9 +4,9 @@ Date : 04.03.2026
 Title : mealController.js
 Desc : File containing all functions for the meal table
 */
-import {addMeal, deleteMealService, findMealByIDService, getAllMeals, updateMeal} from "../services/mealService.js"
+import {createMealService, deleteMealService, findMealByIDService, findAllMealsService, updateMealService} from "../services/mealService.js"
 
-export async function createMeal(req, res, next) {
+export async function createMealController(req, res, next) {
     try {
         const { name, price, description } = req.body
 
@@ -20,14 +20,14 @@ export async function createMeal(req, res, next) {
             return res.status(400).json({ error: 'price must be a positive number' })
         }
 
-        const meal = await addMeal(name, price, description)
+        const meal = await createMealService(name, price, description)
         return res.status(201).json(meal)
     } catch (error) {
         next(error)
     }
 }
 
-export async function modifyMeal(req, res, next){
+export async function updateMealController(req, res, next){
     try {
         const {name, price, description, is_available} = req.body
         const id = req.params.id
@@ -60,7 +60,7 @@ export async function modifyMeal(req, res, next){
                 return res.status(400).json({error: 'is_available must be a boolean'})
             }
         }
-        const meal = await updateMeal(id, name, price, description, is_available)
+        const meal = await updateMealService(id, name, price, description, is_available)
         return res.status(200).json(meal)
 
     } catch (error) {
@@ -68,7 +68,7 @@ export async function modifyMeal(req, res, next){
     }
 }
 
-export async function getMeals(req, res, next){
+export async function findAllMealsController(req, res, next){
     try {
         let available = req.query.available
 
@@ -85,7 +85,7 @@ export async function getMeals(req, res, next){
             }
         }
 
-        const meals = await getAllMeals(available)
+        const meals = await findAllMealsService(available)
         return res.status(200).json(meals)
     } catch (error) {
         next(error)

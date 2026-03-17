@@ -6,7 +6,7 @@ Desc : Database queries for meals
 */
 import pool from "../config/db.js";
 
-export async function createMeal(name, price, description = null) {
+export async function createMealRepository(name, price, description = null) {
     const [result] = await pool.execute(
         'INSERT INTO meal (name, price, description, is_available) VALUES (?, ?, ?, 1)',
         [name, price, description]
@@ -15,7 +15,7 @@ export async function createMeal(name, price, description = null) {
 }
 
 
-export async function findMealByName(name) {
+export async function findMealByNameRepository(name) {
     const [result] = await pool.execute(
         'Select * from meal where name=?',
         [name]
@@ -23,7 +23,7 @@ export async function findMealByName(name) {
     return result[0] ?? null
 }
 
-export async function findMealByID(id) {
+export async function findMealByIDRepository(id) {
     const [result] = await pool.execute(
         'Select * from meal where id=?',
         [id]
@@ -31,7 +31,7 @@ export async function findMealByID(id) {
     return result[0] ?? null
 }
 
-export async function patchMeal(id, name =null, price= null, description= null, is_available= null) {
+export async function updateMealRepository(id, name =null, price= null, description= null, is_available= null) {
     const fieldsValue = []
     const fieldsName = []
 
@@ -46,10 +46,10 @@ export async function patchMeal(id, name =null, price= null, description= null, 
         `Update meal SET ${fieldsName.join(',')} where id=?`,
         fieldsValue
     )
-    return findMealByID(id)
+    return findMealByIDRepository(id)
 }
 
-export async function findAllMeals(isAvailable = undefined) {
+export async function findAllMealsRepository(isAvailable = undefined) {
     if (isAvailable !== undefined) {
         const [result] = await pool.execute(
             'SELECT * FROM meal WHERE is_available = ?',
@@ -61,7 +61,7 @@ export async function findAllMeals(isAvailable = undefined) {
     return result
 }
 
-export async function findMealInActiveOrder(id) {
+export async function findMealInActiveOrderRepository(id) {
     const [result] = await pool.execute(
         `SELECT ohm.meal_id FROM order_has_meal ohm
          JOIN customer_order co ON co.id = ohm.order_id
