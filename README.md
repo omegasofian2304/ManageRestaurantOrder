@@ -88,7 +88,7 @@ It is recommended to use a stable LTS version:
 `node -v`
 
 Minimum: Node.js 16+
-Recommended: Node.js 18+
+Recommended: Node.js 22.18
 
 ### Database
 ---

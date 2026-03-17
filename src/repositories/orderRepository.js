@@ -1,6 +1,12 @@
+/*
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
+Date : 04.03.2026
+Title : orderRepository.js
+Desc : Database queries for orders
+*/
 import pool from "../config/db.js";
 
-export const createOrder = async (order) => {
+export const createOrderRepository = async (order) => {
     const { clientName, served, price, employee_id } = order;
 
     const [result] = await pool.execute(
@@ -14,7 +20,7 @@ export const createOrder = async (order) => {
 };
 
 
-export const findMealsByOrderId = async (orderId) => {
+export const findMealsByOrderIdRepository = async (orderId) => {
     const [rows] = await pool.execute(
         `SELECT m.id AS meal_id, m.name, m.price AS unit_price, ohm.quantity
          FROM order_has_meal as ohm
@@ -26,17 +32,20 @@ export const findMealsByOrderId = async (orderId) => {
 }
 
 
-export const findOrderById = async (id) => {
+export const findOrderByIdRepository = async (id) => {
 
-        const [result] = await pool.execute(
-            'Select * from customer_order where id=?',
-            [id]
-        )
-        return result[0] ?? null
+    const [result] = await pool.execute(
+        `SELECT co.*, e.first_name, e.last_name
+         FROM customer_order co
+         JOIN employee e ON e.id = co.employee_id
+         WHERE co.id = ?`,
+        [id]
+    )
+    return result[0] ?? null
 }
 
 
-export const findOrderWithMeals = async (id) => {
+export const findOrderWithMealsRepository = async (id) => {
     const [rows] = await pool.query(
         `SELECT * FROM order_has_meal
          WHERE order_id = ?`,
@@ -47,7 +56,7 @@ export const findOrderWithMeals = async (id) => {
 };
 
 
-export const serveOrder = async (id) => {
+export const serveOrderRepository = async (id) => {
     const [result] = await pool.execute(
         `UPDATE customer_order
          SET order_served = 1
@@ -58,8 +67,13 @@ export const serveOrder = async (id) => {
     return result.affectedRows > 0;
 };
 
-export const findAllOrder = async () => {
-    const [rows] = await pool.execute('SELECT * FROM customer_order');
+export const getAllOrdersRepository = async () => {
+    const [rows] = await pool.execute(
+        `SELECT co.*, e.first_name, e.last_name
+         FROM customer_order co
+         JOIN employee e ON e.id = co.employee_id
+         ORDER BY co.creation_date DESC`
+    );
     return rows.length > 0 ? rows : null;
 }
 
@@ -70,7 +84,7 @@ export const addMealToAnOrderRepository = async (orderId, mealId, quantity) => {
     )
 }
 
-export const updateMealQuantityInOrderRepository = async (orderId, mealId, mealQuantity) => {
+export const updateMealQuantityRepository = async (orderId, mealId, mealQuantity) => {
     const [result] = await pool.execute(
         `UPDATE order_has_meal
         SET quantity = ? where order_id = ? and meal_id = ?`, [mealQuantity, orderId, mealId]
@@ -79,7 +93,7 @@ export const updateMealQuantityInOrderRepository = async (orderId, mealId, mealQ
     return result;
 }
 
-export const updateOrderPrice = async (orderId, totalPrice) => {
+export const updateOrderPriceRepository = async (orderId, totalPrice) => {
     const [result] = await pool.execute(
         `UPDATE customer_order
         SET total_price = ?
@@ -88,7 +102,7 @@ export const updateOrderPrice = async (orderId, totalPrice) => {
 }
 
 
-export const removeMealFromOrder = async (orderId, mealId) => {
+export const removeMealFromOrderRepository = async (orderId, mealId) => {
     await pool.execute(
         'DELETE FROM order_has_meal where order_id = ? and meal_id = ?', [orderId, mealId]
     )
