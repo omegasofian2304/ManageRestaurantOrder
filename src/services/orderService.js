@@ -58,7 +58,7 @@ export const getOrderDetailService = async (id) => {
         creation_date: order.creation_date,
         order_served: order.order_served,
         employee_id: order.employee_id,
-        total_price: parseFloat(total_price.toFixed(2)),
+        total_price: Math.round(parseFloat(total_price) * 100) / 100,
         meals: meals.map(m => ({
             meal_id: m.meal_id,
             name: m.name,
