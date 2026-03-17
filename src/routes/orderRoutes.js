@@ -7,25 +7,25 @@ Desc : File containing all route for the order table
 import {
     addMealToAnOrderController,
     deleteOrderController,
-    serveOrder,
+    serveOrderController,
     updateMealQuantityController
 } from "../controllers/orderController.js";
 import { Router } from "express";
-import {create, getAllOrders, getOrder} from "../controllers/orderController.js";
+import {createOrderController, getAllOrdersController, getOrderController} from "../controllers/orderController.js";
 import { removeMealFromOrderController } from "../controllers/orderController.js";
 
 
 const router = Router();
 
-router.post("/", create);
+router.post("/", createOrderController);
 
-router.get("/", getAllOrders)
+router.get("/", getAllOrdersController)
 
-router.get("/:id", getOrder)
+router.get("/:id", getOrderController)
 
 router.post("/:id/meals", addMealToAnOrderController)
 
-router.patch('/:id/status', serveOrder)
+router.patch('/:id/status', serveOrderController)
 
 router.delete('/:id/meals/:mealId', removeMealFromOrderController)
 

@@ -1,7 +1,7 @@
 /*
 Author : Sofian Hussein
 Date : 05.03.2026
-Title : mealRoute.js
+Title : mealRoutes.js
 Desc : Route for the meal
 */
 import { Router } from "express";

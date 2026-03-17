@@ -6,18 +6,18 @@ Desc : File containing all sql request for the order table
 */
 import {
     addMealToAnOrderService,
-    createOrder as createOrderService, deleteOrderService,
+    createOrderService as createOrderService, deleteOrderService,
     updateMealQuantityService
-} from "../services/orderServices.js";
-import { findOrderWithMeals as findOrderWithMealsService} from "../services/orderServices.js";
-import { findOrderById as findOrderByIdService } from "../services/orderServices.js";
-import {serveOrder as serveOrderService} from "../services/orderServices.js";
-import {removeMealFromOrderService} from "../services/orderServices.js";
-import {findAllOrder} from "../services/orderServices.js";
-import { getOrderDetail} from "../services/orderServices.js";
+} from "../services/orderService.js";
+import { findOrderWithMealsService as findOrderWithMealsService} from "../services/orderService.js";
+import { findOrderByIdService as findOrderByIdService } from "../services/orderService.js";
+import {serveOrderService as serveOrderService} from "../services/orderService.js";
+import {removeMealFromOrderService} from "../services/orderService.js";
+import {getAllOrdersService} from "../services/orderService.js";
+import { getOrderDetailService} from "../services/orderService.js";
 import {findMealByIDService} from "../services/mealService.js";
 
-export const create = async (req, res,next) => {
+export const createOrderController = async (req, res, next) => {
     try {
         const { clientName, served, price, employee_id } = req.body
         if (clientName  === undefined) {
@@ -54,10 +54,10 @@ export const create = async (req, res,next) => {
     }
 };
 
-export const getOrder = async (req, res, next) => {
+export const getOrderController = async (req, res, next) => {
     try {
         const id = req.params.id
-        const order = await getOrderDetail(id)
+        const order = await getOrderDetailService(id)
         return res.status(200).json(order)
     } catch (error) {
         next(error)
@@ -65,7 +65,7 @@ export const getOrder = async (req, res, next) => {
 };
 
 
-export const serveOrder = async (req, res, next) => {
+export const serveOrderController = async (req, res, next) => {
 
     try {
         const { id } = req.params;
@@ -96,9 +96,9 @@ export const serveOrder = async (req, res, next) => {
     }
 };
 
-export const getAllOrders = async (req, res, next) => {
+export const getAllOrdersController = async (req, res, next) => {
     try {
-        const orders = await findAllOrder();
+        const orders = await getAllOrdersService();
         if (!orders) {
             return res.status(404).json({ message: "No orders found" });
         }
@@ -146,18 +146,15 @@ export async function removeMealFromOrderController(req, res, next) {
     try {
         const { id, mealId } = req.params
 
-
-        if (isNaN(id) || Number(id) <= 0) {
+        if (typeof id !== 'number' || id <= 0) {
             return res.status(400).json({ error: 'Order ID must be a positive number' })
         }
 
-        if (isNaN(mealId) || Number(mealId) <= 0) {
+        if (typeof mealId !== 'number' || mealId <= 0) {
             return res.status(400).json({ error: 'Meal ID must be a positive number' })
         }
 
-
         await removeMealFromOrderService(mealId, id)
-
 
         return res.status(200).json({ message: 'Meal removed successfully' })
 

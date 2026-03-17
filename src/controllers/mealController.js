@@ -14,6 +14,8 @@ export async function createMeal(req, res, next) {
             return res.status(400).json({ error: 'name and price are required' })
         }
 
+        // Source Claude
+        // Prompt : how to test if a variable is a number in js
         if (typeof price !== 'number' || price <= 0) {
             return res.status(400).json({ error: 'price must be a positive number' })
         }

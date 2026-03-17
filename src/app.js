@@ -1,8 +1,8 @@
 import express from "express";
-import orderRoute from "./routes/orderRoute.js";
+import orderRoute from "./routes/orderRoutes.js";
 
 import errorMiddleware from './middlewares/errorMiddleware.js'
-import mealRouter from "./routes/mealRoute.js";
+import mealRouter from "./routes/mealRoutes.js";
 const app = express();
 
 app.use(express.json());
