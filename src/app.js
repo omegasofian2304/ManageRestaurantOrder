@@ -9,6 +9,8 @@ import orderRoute from "./routes/orderRoutes.js";
 
 import errorMiddleware from './middlewares/errorMiddleware.js'
 import mealRouter from "./routes/mealRoutes.js";
+import authRouter from "./routes/authRoutes.js";
+
 const app = express();
 
 app.use(express.json());
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use("/orders", orderRoute);
 
 app.use("/meals", mealRouter);
+
+app.use("/auth", authRouter);
 
 app.use(errorMiddleware);
 
