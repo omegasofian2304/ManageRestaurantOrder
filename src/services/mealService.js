@@ -1,13 +1,20 @@
 /*
-Author : Sofian Hussein
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 04.03.2026
-Title : mealRepository.js
-Desc : Business logic for meal
+Title : mealService.js
+Desc : Business logic for meals
 */
-import {createMeal, findMealByName, findMealByID, patchMeal, findAllMeals} from "../repositories/mealRepository.js"
+import {
+    createMealRepository,
+    findMealByNameRepository,
+    findMealByIDRepository,
+    updateMealRepository,
+    findAllMealsRepository,
+    findMealInActiveOrderRepository, deleteMealRepository
+} from "../repositories/mealRepository.js"
 
-export async function addMeal(name, price, description = null) {
-    const existingMeal = await findMealByName(name)
+export async function createMealService(name, price, description = null) {
+    const existingMeal = await findMealByNameRepository(name)
     if (existingMeal) {
         const error = new Error('A meal with this name already exists')
         error.status = 409
@@ -17,27 +24,43 @@ export async function addMeal(name, price, description = null) {
     // round the price for having only 2 decimals
     const roundedPrice = Math.round(price * 100) / 100
 
-    return await createMeal(name, roundedPrice, description)
+    return await createMealRepository(name, roundedPrice, description)
 }
 
-export async function updateMeal(id, name=null, price=null, description=null, is_available=null) {
-    const existingMeal = await findMealByID(id)
+export async function updateMealService(id, name=null, price=null, description=null, is_available=null) {
+    const existingMeal = await findMealByIDRepository(id)
     if (!existingMeal) {
         const error = new Error('A meal with this id does not exist')
         error.status = 404
         throw error
     }
 
-    if (name && await findMealByName(name)) {
+    if (name && await findMealByNameRepository(name)) {
         const error = new Error('A meal with this name already exists')
         error.status = 409
         throw error
     }
 
-    return await patchMeal(id, name, price, description, is_available)
+    return await updateMealRepository(id, name, price, description, is_available)
 
 }
 
-export async function getAllMeals(isAvailable) {
-    return await findAllMeals(isAvailable);
+export async function findAllMealsService(isAvailable) {
+    return await findAllMealsRepository(isAvailable);
+}
+
+export async function findMealByIDService(id) {
+    return await findMealByIDRepository(id);
+}
+
+export async function deleteMealService(id) {
+    const mealInActiveOrder = await findMealInActiveOrderRepository(id)
+
+    if (mealInActiveOrder) {
+        const error = new Error('Meal is in an active order')
+        error.status = 409
+        throw error
+    }
+
+    await deleteMealRepository(id)
 }
