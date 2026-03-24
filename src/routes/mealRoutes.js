@@ -12,17 +12,19 @@ import {
     findAllMealsController,
     updateMealController
 } from "../controllers/mealController.js";
+import {authMiddleware} from "../middlewares/authMiddleware.js";
+import {requireRole} from "../middlewares/roleMiddleware.js";
 
 const router = Router();
 
-router.get("/", findAllMealsController);
+router.get("/", authMiddleware, findAllMealsController);
 
-router.get("/:id", findMealByIdController);
+router.get("/:id", authMiddleware, findMealByIdController);
 
-router.post("/", createMealController);
+router.post("/", authMiddleware, requireRole(["admin","manager"]), createMealController);
 
-router.patch("/:id", updateMealController);
+router.patch("/:id", authMiddleware, requireRole(["admin","manager"]), updateMealController);
 
-router.delete("/:id", deleteMealController);
+router.delete("/:id", authMiddleware, requireRole(["admin","manager"]), deleteMealController);
 
 export default router;
