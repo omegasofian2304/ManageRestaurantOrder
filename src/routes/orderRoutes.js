@@ -15,24 +15,26 @@ import {
     removeMealFromOrderController
 } from "../controllers/orderController.js";
 import { Router } from "express";
+import {authMiddleware} from "../middlewares/authMiddleware.js";
+import {requireRole} from "../middlewares/roleMiddleware.js";
 
 
 const router = Router();
 
-router.post("/", createOrderController);
+router.post("/", authMiddleware, createOrderController);
 
-router.get("/", getAllOrdersController)
+router.get("/", authMiddleware, getAllOrdersController)
 
-router.get("/:id", getOrderController)
+router.get("/:id", authMiddleware, getOrderController)
 
-router.post("/:id/meals", addMealToAnOrderController)
+router.post("/:id/meals", authMiddleware, addMealToAnOrderController)
 
-router.patch('/:id/status', serveOrderController)
+router.patch('/:id/status', authMiddleware, serveOrderController)
 
-router.delete('/:id/meals/:mealId', removeMealFromOrderController)
+router.delete('/:id/meals/:mealId', authMiddleware, removeMealFromOrderController)
 
-router.delete("/:id", deleteOrderController)
+router.delete("/:id", authMiddleware, requireRole(["admin","manager"]), deleteOrderController)
 
-router.patch("/:id/meals/:mealId", updateMealQuantityController)
+router.patch("/:id/meals/:mealId", authMiddleware, updateMealQuantityController)
 
 export default router;

@@ -13,7 +13,9 @@ import { findMealByIDService } from "../services/mealService.js";
 
 export const createOrderController = async (req, res, next) => {
     try {
-        const { clientName, employee_id } = req.body
+        const { clientName } = req.body
+        const employee_id = req.user.id
+
         if (clientName  === undefined) {
             return res.status(400).json({ error: 'clientName order required' })
         }

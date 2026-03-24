@@ -21,7 +21,7 @@ export async function loginEmployeeController(req, res, next) {
         }
 
         const token = await loginEmployeeService(email, password)
-        return res.status(200).json({ token })
+        return res.status(200).json({ message: 'Your Token : ', data: { token } })
 
     } catch (error) {
         next(error)
