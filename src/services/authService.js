@@ -2,7 +2,7 @@
 Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 18.03.2026
 Title : authService.js
-Desc : Business logic for employees
+Desc : Business logic for auth
 */
 import {findEmployeeByEmailRepository} from "../repositories/authRepository.js";
 import bcrypt from "bcrypt";

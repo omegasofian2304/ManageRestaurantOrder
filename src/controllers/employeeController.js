@@ -1,51 +1,40 @@
+/*
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
+Date : 04.03.2026
+Title : mealController.js
+Desc : File containing all controllers for the employees
+*/
 
-import{ createEmployeeService }from '../services/employeeService';
+import { findAllEmployeesService, findEmployeeByIDService } from "../services/employeeService.js"
 
 
-export const createEmployeeController = async (req, res, next) => {
+export async function findAllEmployeesController(req, res, next){
     try {
-        const { firstname, lastname, post, email, password} = req.body
-        if (firstname  === undefined) {
-            return res.status(400).json({ error: 'firstname order required' })
-        }
-        else if (firstname) {
-            if (firstname.length > 45 || firstname.length < 2) {
-                return res.status(400).json({error: 'firstname must be less than 45 characters'})
-            }
+
+        const employees = await findAllEmployeesService()
+        return res.status(200).json(employees)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+export async function findEmployeeByIDController(req, res, next){
+    try {
+
+        let id = req.params.id
+
+        if (!id) {
+            return res.status(400).json({error: 'id is required'})
         }
 
-        if (lastname === undefined) {
-            return res.status(400).json({ error: 'lastname order required' })
-        }
-        else if (lastname.length > 45 || lastname.length < 2) {
-            return res.status(400).json({ error: 'lastname must be less than 45 characters' })
+        const employee = await findEmployeeByIDService(id)
+
+        if (!employee) {
+            return res.status(404).json({error: 'employee not found'})
         }
 
-        if (post === undefined) {
-            return res.status(400).json({ error: 'post order required' })
-        }
-        else if (post.length > 45 || post.length < 2) {
-            return res.status(400).json({ error: 'post must be less than 45 characters' })
-        }
-
-        if (email === undefined) {
-            return res.status(400).json({ error: 'email order required' })
-        }
-        else if (email.length > 45 || email.length < 2) {
-            return res.status(400).json({ error: 'email must be less than 45 characters' })
-        }
-
-        if (password === undefined) {
-            return res.status(400).json({ error: 'password order required' })
-        }
-        else if (password.length > 45 || password.length < 2) {
-            return res.status(400).json({ error: 'password must be less than 45 characters' })
-        }
-
-        const employee = { firstname, lastname, post, email, password }
-
-        const result = await createEmployeeService(employee);
-        return res.status(201).json(result);
+        return res.status(200).json(employee)
     } catch (error) {
         next(error)
 

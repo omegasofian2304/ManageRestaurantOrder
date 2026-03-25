@@ -23,6 +23,8 @@ app.use("/auth", authRouter);
 
 app.use("/employee",authMiddleware, requireRole(["admin","manager"]), employeeRouter );
 
+app.use("/employees", employeeRouter);
+
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;

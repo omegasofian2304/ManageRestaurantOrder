@@ -1,7 +1,15 @@
-import{createEmployeeController} from "../controllers/employeeController.js";
-import {Router} from "express";
+/*
+Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
+Date : 18.03.2026
+Title : authRoutes.js
+Desc : File containing all route for the employees
+*/
+import { Router } from "express";
+import {findEmployeeByIDController, findAllEmployeesController} from "../controllers/employeeController.js";
 
 const router = Router();
-router.post("/", createEmployeeController);
+router.get("/", findAllEmployeesController);
+
+router.get("/:id", findEmployeeByIDController);
 
 export default router;
