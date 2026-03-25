@@ -5,13 +5,20 @@ Title : authRoutes.js
 Desc : File containing all route for the employees
 */
 import { Router } from "express";
-import {findEmployeeByIDController, findAllEmployeesController} from "../controllers/employeeController.js";
+import {
+    findEmployeeByIDController,
+    findAllEmployeesController,
+    createEmployeeController
+} from "../controllers/employeeController.js";
 import {authMiddleware} from "../middlewares/authMiddleware.js";
 import {requireRole} from "../middlewares/roleMiddleware.js";
 
 const router = Router();
+
 router.get("/", authMiddleware, requireRole(["admin","manager"]), findAllEmployeesController);
 
 router.get("/:id", authMiddleware, requireRole(["admin","manager"]),findEmployeeByIDController);
+
+router.post("/", createEmployeeController);
 
 export default router;
