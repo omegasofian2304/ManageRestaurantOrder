@@ -8,7 +8,8 @@ import {
     findAllEmployeesService,
     findEmployeeByIDService,
     createEmployeeService,
-    findEmployeeByEmailService
+    findEmployeeByEmailService,
+    updateEmployeeService,
 } from "../services/employeeService.js"
 
 export const createEmployeeController = async (req, res, next) => {
@@ -110,5 +111,48 @@ export async function findEmployeeByIDController(req, res, next){
     } catch (error) {
         next(error)
 
+    }
+}
+
+
+export async function updateEmployeeController(req, res, next){
+    try {
+        const {firstname, lastname, email, post} = req.body
+        const id = req.params.id
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+        if (!firstname && !lastname && !email && post === undefined) {
+            return res.status(400).json({error: "At least one field is required"});
+        }
+
+        if (firstname) {
+            if (firstname.length < 2) {
+                return res.status(400).json({error: 'first name must be at least 2 characters'})
+            }
+            if (firstname.length > 45) {
+                return res.status(400).json({error: 'first name must be less than 45 characters'})
+            }
+        }
+
+        if (lastname) {
+            if (lastname.length < 2) {
+                return res.status(400).json({error: 'last name must be at least 2 characters'})
+            }
+            if (lastname.length > 45) {
+                return res.status(400).json({error: 'last name must be less than 45 characters'})
+            }
+        }
+
+        if (email && !emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Email is invalid' })
+        }
+
+        if (post !== undefined && !["admin", "manager", "employee"].includes(post)) {
+            return res.status(400).json({error: 'post must be admin, manager, or employee'})
+        }
+        const employee = await updateEmployeeService(id, firstname, lastname, email, post)
+        return res.status(200).json(employee)
+    } catch (error) {
+        next(error)
     }
 }

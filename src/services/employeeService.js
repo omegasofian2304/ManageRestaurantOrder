@@ -8,7 +8,8 @@ Desc : Business logic for employees
 import {
     findAllEmployeesRepository,
     findEmployeeByIDRepository,
-    createEmployeeRepository
+    createEmployeeRepository,
+    updateEmployeeRepository,
 } from '../repositories/employeeRepository.js'
 import bcrypt from 'bcrypt'
 import {findEmployeeByEmailRepository} from "../repositories/authRepository.js";
@@ -28,4 +29,18 @@ export async function findEmployeeByIDService(id){
 
 export async function findEmployeeByEmailService(email){
     return await findEmployeeByEmailRepository(email);
+}
+
+export async function updateEmployeeService(id, firstname = null,lastname = null,email = null, post = null)
+{
+    const existingEmployee = await findEmployeeByIDService(id);
+
+    if(!existingEmployee){
+        const error = new Error('An Employee with this id does not exist')
+        error.status = 404
+        throw error
+    }
+
+
+    return await updateEmployeeRepository(id, firstname, lastname, email,post)
 }

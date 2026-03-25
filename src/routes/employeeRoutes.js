@@ -8,17 +8,19 @@ import { Router } from "express";
 import {
     findEmployeeByIDController,
     findAllEmployeesController,
-    createEmployeeController
+    createEmployeeController, updateEmployeeController
 } from "../controllers/employeeController.js";
 import {authMiddleware} from "../middlewares/authMiddleware.js";
 import {requireRole} from "../middlewares/roleMiddleware.js";
 
 const router = Router();
 
-router.get("/", authMiddleware, requireRole(["admin","manager"]), findAllEmployeesController);
+router.get("/", authMiddleware, requireRole(["admin"]), findAllEmployeesController);
 
 router.get("/:id", authMiddleware, requireRole(["admin","manager"]),findEmployeeByIDController);
 
 router.post("/", authMiddleware, requireRole(["admin"]), createEmployeeController);
+
+router.patch("/:id", authMiddleware, requireRole(["admin"]), updateEmployeeController);
 
 export default router;

@@ -30,11 +30,45 @@ export const createEmployeeRepository = async (employee) => {
     );
 
     return "successfuly created employee";
-};
-
-export const findEmployeesByEmail = async (email) => {
-    const [result] = await pool.execute(
-        `SELECT email FROM employee WHERE email = ?`, [email]
-    )
-    return result[0] ?? null
 }
+
+export async function updateEmployeeRepository(id, firstname = null,lastname = null,email = null, post = null) {
+    const fieldsValue = []
+    const fieldsName = []
+
+    if (firstname !== null) {
+        fieldsValue.push(firstname)
+        fieldsName.push('first_name = ?')
+    }
+
+    if (lastname !== null) {
+        fieldsValue.push(lastname)
+        fieldsName.push('last_name = ?')
+    }
+
+    if (email !== null) {
+        fieldsValue.push(email)
+        fieldsName.push('email = ?')
+    }
+
+    if (post !== null) {
+        fieldsValue.push(post)
+        fieldsName.push('post = ?')
+    }
+
+
+    if (fieldsName.length === 0) {
+        throw new Error('No fields were updated')
+    }
+
+    fieldsValue.push(id)
+
+    const [result] = await pool.execute(
+        `UPDATE employee SET ${fieldsName.join(', ')} WHERE id = ?`,
+        fieldsValue
+    )
+
+    return findEmployeeByIDRepository(id)
+}
+
+
