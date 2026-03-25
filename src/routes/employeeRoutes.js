@@ -19,6 +19,6 @@ router.get("/", authMiddleware, requireRole(["admin","manager"]), findAllEmploye
 
 router.get("/:id", authMiddleware, requireRole(["admin","manager"]),findEmployeeByIDController);
 
-router.post("/", createEmployeeController);
+router.post("/", authMiddleware, requireRole(["admin"]), createEmployeeController);
 
 export default router;
