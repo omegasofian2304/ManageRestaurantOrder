@@ -6,7 +6,7 @@ Desc : This file is the entry point of the application
 */
 import express from "express";
 import orderRoute from "./routes/orderRoutes.js";
-
+import employeeRouter from "./routes/employeeRoutes.js";
 import errorMiddleware from './middlewares/errorMiddleware.js'
 import mealRouter from "./routes/mealRoutes.js";
 import authRouter from "./routes/authRoutes.js";
@@ -20,6 +20,8 @@ app.use("/orders", orderRoute);
 app.use("/meals", mealRouter);
 
 app.use("/auth", authRouter);
+
+app.use("/employee",authMiddleware, requireRole(["admin","manager"]), employeeRouter );
 
 app.use(errorMiddleware);
 
