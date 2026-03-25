@@ -21,3 +21,43 @@ export async function findEmployeeByIDRepository(id) {
     )
     return result[0] ?? null
 }
+
+
+export async function updateEmployeeRepository(id, firstname = null,lastname = null,email = null, post = null) {
+    const fieldsValue = []
+    const fieldsName = []
+
+    if (firstname !== null) {
+        fieldsValue.push(firstname)
+        fieldsName.push('firstname = ?')
+    }
+
+    if (lastname !== null) {
+        fieldsValue.push(lastname)
+        fieldsName.push('lastname = ?')
+    }
+
+    if (email !== null) {
+        fieldsValue.push(email)
+        fieldsName.push('email = ?')
+    }
+
+    if (post !== null) {
+        fieldsValue.push(post)
+        fieldsName.push('post = ?')
+    }
+
+    //Pour éviter qu'un update soit vide (donc qu'on ne change rien)
+    if (fieldsName.length === 0) {
+        throw new Error('Aucun champ a été mis à jour')
+    }
+
+    fieldsValue.push(id)
+
+    const [result] = await pool.execute(
+        `UPDATE employee SET ${fieldsName.join(', ')} WHERE id = ?`,
+        fieldsValue
+    )
+
+    return findEmployeeByIDRepository(id)
+}
