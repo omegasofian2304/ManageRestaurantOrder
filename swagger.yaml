@@ -1,0 +1,1321 @@
+openapi: 3.0.3
+info:
+  title: ManageRestaurantOrder API
+  description: >
+    Backend REST API designed to manage orders in a fast food restaurant system.
+    Allows managing meals, orders and employees.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication
+  - name: Employees
+    description: Employee management
+  - name: Meals
+    description: Meal management
+  - name: Orders
+    description: Order management
+
+# ═══════════════════════════════════════════════
+# SECURITY
+# ═══════════════════════════════════════════════
+security:
+  - bearerAuth: []
+
+# ═══════════════════════════════════════════════
+# COMPONENTS
+# ═══════════════════════════════════════════════
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    # ── AUTH ──────────────────────────────────
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@restaurant.com
+        password:
+          type: string
+          example: Admin1234!
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+    # ── EMPLOYEE ──────────────────────────────
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        firstname:
+          type: string
+          example: Jean
+        lastname:
+          type: string
+          example: Dupont
+        email:
+          type: string
+          format: email
+          example: jean.dupont@restaurant.com
+        post:
+          type: string
+          enum: [employee, admin, manager]
+          example: employee
+
+    EmployeeInput:
+      type: object
+      required: [firstname, lastname, post, email, password]
+      properties:
+        firstname:
+          type: string
+          example: Jean
+        lastname:
+          type: string
+          example: Dupont
+        post:
+          type: string
+          enum: [employee, admin, manager]
+          example: employee
+        email:
+          type: string
+          format: email
+          example: jean.dupont@restaurant.com
+        password:
+          type: string
+          description: Min 8 chars, 1 uppercase, 1 number, 1 special char
+          example: Secure1234!
+
+    EmployeePatch:
+      type: object
+      properties:
+        firstname:
+          type: string
+          example: Pierre
+        lastname:
+          type: string
+          example: Dupont
+        post:
+          type: string
+          enum: [employee, admin, manager]
+          example: manager
+        email:
+          type: string
+          format: email
+          example: pierre.dupont@restaurant.com
+        password:
+          type: string
+          example: NewSecure1234!
+
+    # ── MEAL ──────────────────────────────────
+    Meal:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Burger Classic
+        description:
+          type: string
+          nullable: true
+          example: Un bon burger
+        price:
+          type: number
+          format: float
+          example: 12.50
+        is_available:
+          type: integer
+          enum: [0, 1]
+          example: 1
+
+    MealInput:
+      type: object
+      required: [name, price]
+      properties:
+        name:
+          type: string
+          example: Burger Classic
+        description:
+          type: string
+          nullable: true
+          example: Un bon burger
+        price:
+          type: number
+          format: float
+          minimum: 0.01
+          example: 12.50
+
+    MealPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Burger Deluxe
+        description:
+          type: string
+          nullable: true
+          example: Un meilleur burger
+        price:
+          type: number
+          format: float
+          minimum: 0.01
+          example: 13.00
+        is_available:
+          type: integer
+          enum: [0, 1]
+          example: 0
+
+    # ── ORDER ─────────────────────────────────
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        client_name:
+          type: string
+          example: Alice
+        creation_date:
+          type: string
+          format: date-time
+          example: 2024-01-15T12:00:00.000Z
+        order_served:
+          type: integer
+          enum: [0, 1]
+          example: 0
+        total_price:
+          type: number
+          format: float
+          example: 25.00
+        employee_id:
+          type: integer
+          example: 1
+        meals:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderMeal'
+
+    OrderMeal:
+      type: object
+      properties:
+        meal_id:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: Burger Classic
+        price:
+          type: number
+          format: float
+          example: 12.50
+
+    OrderInput:
+      type: object
+      required: [clientName]
+      properties:
+        clientName:
+          type: string
+          minLength: 2
+          example: Alice
+
+    OrderMealsInput:
+      type: object
+      required: [meals]
+      properties:
+        meals:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [meal_id, quantity]
+            properties:
+              meal_id:
+                type: integer
+                example: 1
+              quantity:
+                type: integer
+                minimum: 1
+                example: 2
+
+    OrderStatusInput:
+      type: object
+      required: [order_served]
+      properties:
+        order_served:
+          type: integer
+          enum: [1]
+          example: 1
+
+    # ── ERRORS ────────────────────────────────
+    Error400:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: Missing or invalid fields
+
+    Error401:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 401
+        message:
+          type: string
+          example: Invalid credentials
+
+    Error403:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 403
+        message:
+          type: string
+          example: Forbidden - insufficient permissions
+
+    Error404:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: Resource not found
+
+    Error409:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 409
+        message:
+          type: string
+          example: Resource already exists or conflict
+
+    Error422:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 422
+        message:
+          type: string
+          example: Unprocessable entity
+
+# ═══════════════════════════════════════════════
+# PATHS
+# ═══════════════════════════════════════════════
+paths:
+
+  # ══════════════════════════════════════════════
+  # AUTH
+  # ══════════════════════════════════════════════
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and get a JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInput'
+            examples:
+              valid:
+                summary: Valid credentials
+                value:
+                  email: admin@restaurant.com
+                  password: Admin1234!
+              missingPassword:
+                summary: Missing password (400)
+                value:
+                  email: admin@restaurant.com
+              invalidEmail:
+                summary: Invalid email format (400)
+                value:
+                  email: not-an-email
+                  password: Admin1234!
+              wrongCredentials:
+                summary: Wrong credentials (401)
+                value:
+                  email: admin@restaurant.com
+                  password: WrongPassword1!
+      responses:
+        '200':
+          description: Login successful, returns JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Missing fields or invalid email format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+              example:
+                status: 400
+                message: Missing or invalid fields
+        '401':
+          description: Wrong credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+              example:
+                status: 401
+                message: Invalid credentials
+
+  # ══════════════════════════════════════════════
+  # EMPLOYEES
+  # ══════════════════════════════════════════════
+  /employees:
+    get:
+      tags: [Employees]
+      summary: Get all employees (admin only)
+      responses:
+        '200':
+          description: List of employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+              example:
+                - id: 1
+                  firstname: Jean
+                  lastname: Dupont
+                  email: jean.dupont@restaurant.com
+                  post: employee
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+              example:
+                status: 401
+                message: No token provided
+        '403':
+          description: Forbidden - insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+              example:
+                status: 403
+                message: Forbidden - insufficient permissions
+
+    post:
+      tags: [Employees]
+      summary: Create a new employee (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+            examples:
+              valid:
+                summary: Valid employee
+                value:
+                  firstname: Jean
+                  lastname: Dupont
+                  post: employee
+                  email: jean.dupont@restaurant.com
+                  password: Secure1234!
+              missingFirstname:
+                summary: Missing firstname (400)
+                value:
+                  lastname: Dupont
+                  post: employee
+                  email: jean.dupont@restaurant.com
+                  password: Secure1234!
+              invalidPost:
+                summary: Invalid post value (400)
+                value:
+                  firstname: Jean
+                  lastname: Dupont
+                  post: chef
+                  email: jean.dupont@restaurant.com
+                  password: Secure1234!
+              invalidEmail:
+                summary: Invalid email format (400)
+                value:
+                  firstname: Jean
+                  lastname: Dupont
+                  post: employee
+                  email: not-an-email
+                  password: Secure1234!
+              weakPassword:
+                summary: Weak password (400)
+                value:
+                  firstname: Jean
+                  lastname: Dupont
+                  post: employee
+                  email: jean.dupont@restaurant.com
+                  password: weak
+              duplicateEmail:
+                summary: Duplicate email (409)
+                value:
+                  firstname: Jean
+                  lastname: Dupont
+                  post: employee
+                  email: jean.dupont@restaurant.com
+                  password: Secure1234!
+      responses:
+        '201':
+          description: Employee created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+              example:
+                id: 5
+                firstname: Jean
+                lastname: Dupont
+                email: jean.dupont@restaurant.com
+                post: employee
+        '400':
+          description: Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '409':
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: An employee with this email already exists
+
+  /employees/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      tags: [Employees]
+      summary: Get an employee by ID (admin or manager)
+      responses:
+        '200':
+          description: Employee found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+              example:
+                id: 1
+                firstname: Jean
+                lastname: Dupont
+                email: jean.dupont@restaurant.com
+                post: employee
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '404':
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+              example:
+                status: 404
+                message: Employee not found
+
+    patch:
+      tags: [Employees]
+      summary: Update an employee (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeePatch'
+            examples:
+              valid:
+                summary: Valid update
+                value:
+                  firstname: Pierre
+                  post: manager
+              emptyBody:
+                summary: Empty body (400)
+                value: {}
+              invalidPost:
+                summary: Invalid post (400)
+                value:
+                  post: chef
+      responses:
+        '200':
+          description: Employee updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+              example:
+                id: 1
+                firstname: Pierre
+                lastname: Dupont
+                email: jean.dupont@restaurant.com
+                post: manager
+        '400':
+          description: Missing or invalid fields / empty body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '404':
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+
+    delete:
+      tags: [Employees]
+      summary: Delete an employee (admin only)
+      responses:
+        '204':
+          description: Employee deleted
+        '400':
+          description: Employee has linked orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+              example:
+                status: 400
+                message: Cannot delete employee with existing orders
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error403'
+        '404':
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+
+  # ══════════════════════════════════════════════
+  # MEALS
+  # ══════════════════════════════════════════════
+  /meals:
+    get:
+      tags: [Meals]
+      summary: Get all meals
+      parameters:
+        - name: available
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [true, false]
+          description: Filter by availability
+          example: true
+      responses:
+        '200':
+          description: List of meals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meal'
+              examples:
+                allMeals:
+                  summary: All meals
+                  value:
+                    - id: 1
+                      name: Burger Classic
+                      description: Un bon burger
+                      price: 12.50
+                      is_available: 1
+                    - id: 2
+                      name: Pizza Margherita
+                      description: Une bonne pizza
+                      price: 10.00
+                      is_available: 0
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+
+    post:
+      tags: [Meals]
+      summary: Create a new meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealInput'
+            examples:
+              valid:
+                summary: Valid meal
+                value:
+                  name: Burger Classic
+                  price: 12.50
+                  description: Un bon burger
+              missingName:
+                summary: Missing name (400)
+                value:
+                  price: 12.50
+              invalidPrice:
+                summary: Negative price (400)
+                value:
+                  name: Pizza
+                  price: -5
+              duplicateName:
+                summary: Duplicate name (409)
+                value:
+                  name: Burger Classic
+                  price: 9.99
+      responses:
+        '201':
+          description: Meal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+              example:
+                id: 1
+                name: Burger Classic
+                description: Un bon burger
+                price: 12.50
+                is_available: 1
+        '400':
+          description: Missing or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '409':
+          description: A meal with this name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: A meal with this name already exists
+
+  /meals/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      tags: [Meals]
+      summary: Get a meal by ID
+      responses:
+        '200':
+          description: Meal found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+              example:
+                id: 1
+                name: Burger Classic
+                description: Un bon burger
+                price: 12.50
+                is_available: 1
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Meal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+              example:
+                status: 404
+                message: Meal not found
+
+    patch:
+      tags: [Meals]
+      summary: Update a meal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealPatch'
+            examples:
+              valid:
+                summary: Valid update
+                value:
+                  price: 13.00
+                  is_available: 0
+              emptyBody:
+                summary: Empty body (400)
+                value: {}
+              notFound:
+                summary: Meal not found (404)
+                value:
+                  price: 10.00
+      responses:
+        '200':
+          description: Meal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meal'
+              example:
+                id: 1
+                name: Burger Classic
+                description: Un bon burger
+                price: 13.00
+                is_available: 0
+        '400':
+          description: Empty body or invalid fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Meal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+
+    delete:
+      tags: [Meals]
+      summary: Delete a meal
+      responses:
+        '204':
+          description: Meal deleted
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Meal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '409':
+          description: Meal is linked to an active order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: Cannot delete a meal linked to an active order
+
+  # ══════════════════════════════════════════════
+  # ORDERS
+  # ══════════════════════════════════════════════
+  /orders:
+    get:
+      tags: [Orders]
+      summary: Get all orders
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+              example:
+                - id: 1
+                  client_name: Alice
+                  creation_date: 2024-01-15T12:00:00.000Z
+                  order_served: 0
+                  total_price: 25.00
+                  employee_id: 1
+                  meals:
+                    - meal_id: 1
+                      quantity: 2
+                      name: Burger Classic
+                      price: 12.50
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+            examples:
+              valid:
+                summary: Valid order
+                value:
+                  clientName: Alice
+              missingClientName:
+                summary: Missing clientName (400)
+                value: {}
+              tooShort:
+                summary: clientName too short (400)
+                value:
+                  clientName: A
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: 1
+                client_name: Alice
+                creation_date: 2024-01-15T12:00:00.000Z
+                order_served: 0
+                total_price: 0.00
+                employee_id: 1
+                meals: []
+        '400':
+          description: Missing or invalid clientName
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+
+  /orders/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      tags: [Orders]
+      summary: Get an order by ID
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+              example:
+                id: 1
+                client_name: Alice
+                creation_date: 2024-01-15T12:00:00.000Z
+                order_served: 0
+                total_price: 25.00
+                employee_id: 1
+                meals:
+                  - meal_id: 1
+                    quantity: 2
+                    name: Burger Classic
+                    price: 12.50
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+              example:
+                status: 404
+                message: Order not found
+
+    delete:
+      tags: [Orders]
+      summary: Delete an order
+      responses:
+        '204':
+          description: Order deleted
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '409':
+          description: Cannot delete a served order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: Cannot delete a served order
+
+  /orders/{id}/meals:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    post:
+      tags: [Orders]
+      summary: Add meals to an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderMealsInput'
+            examples:
+              valid:
+                summary: Add meals
+                value:
+                  meals:
+                    - meal_id: 1
+                      quantity: 2
+                    - meal_id: 2
+                      quantity: 1
+              incrementQty:
+                summary: Duplicate meal increments quantity
+                value:
+                  meals:
+                    - meal_id: 1
+                      quantity: 3
+              emptyArray:
+                summary: Empty array (400)
+                value:
+                  meals: []
+              unavailableMeal:
+                summary: Unavailable meal (422)
+                value:
+                  meals:
+                    - meal_id: 99
+                      quantity: 1
+      responses:
+        '200':
+          description: Meals added / quantities updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: meals array is missing or empty
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '409':
+          description: Order is already served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: Order is already served
+        '422':
+          description: Meal is unavailable or not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error422'
+              example:
+                status: 422
+                message: Meal is unavailable or does not exist
+
+  /orders/{id}/meals/{mealId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+      - name: mealId
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    patch:
+      tags: [Orders]
+      summary: Update meal quantity in an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+                  example: 5
+            examples:
+              valid:
+                summary: Valid quantity update
+                value:
+                  quantity: 5
+              zeroQuantity:
+                summary: Quantity 0 rejected (400)
+                value:
+                  quantity: 0
+      responses:
+        '200':
+          description: Quantity updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid quantity (must be >= 1)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+              example:
+                status: 400
+                message: Quantity must be at least 1
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Order or meal not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+
+    delete:
+      tags: [Orders]
+      summary: Remove a meal from an order
+      responses:
+        '204':
+          description: Meal removed from order
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Meal not found in this order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+              example:
+                status: 404
+                message: Meal not found in this order
+
+  /orders/{id}/status:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    patch:
+      tags: [Orders]
+      summary: Mark an order as served
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusInput'
+            examples:
+              valid:
+                summary: Serve the order
+                value:
+                  order_served: 1
+              invalidValue:
+                summary: Invalid value - only 1 accepted (400)
+                value:
+                  order_served: 0
+      responses:
+        '200':
+          description: Order marked as served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Invalid value - order_served must be 1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error400'
+              example:
+                status: 400
+                message: order_served must be 1
+        '401':
+          description: No token provided
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error401'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error404'
+        '409':
+          description: Order is already served
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error409'
+              example:
+                status: 409
+                message: Order is already served
+        '422':
+          description: Cannot serve an order with no meals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error422'
+              example:
+                status: 422
+                message: Cannot serve an order with no meals
