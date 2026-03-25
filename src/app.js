@@ -10,10 +10,12 @@ import employeeRouter from "./routes/employeeRoutes.js";
 import errorMiddleware from './middlewares/errorMiddleware.js'
 import mealRouter from "./routes/mealRoutes.js";
 import authRouter from "./routes/authRoutes.js";
+import { swaggerServe, swaggerSetup } from "./config/swagger.js";
 
 const app = express();
 
 app.use(express.json());
+app.use("/api-docs", swaggerServe, swaggerSetup);
 
 app.use("/orders", orderRoute);
 
@@ -23,11 +25,11 @@ app.use("/auth", authRouter);
 
 app.use("/employee", employeeRouter );
 
-
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Swagger UI → http://localhost:${PORT}/api-docs`);
 });
