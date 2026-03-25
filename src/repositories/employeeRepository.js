@@ -64,11 +64,16 @@ export async function updateEmployeeRepository(id, firstname = null,lastname = n
     fieldsValue.push(id)
 
     const [result] = await pool.execute(
-        `UPDATE employee SET ${fieldsName.join(', ')} WHERE id = ?`,
-        fieldsValue
+        `UPDATE employee
+         SET ${fieldsName.join(', ')}
+         WHERE id = ?`,
+        fieldsValue)
+}
+export async function deleteEmployeeRepository(id) {
+    await pool.execute(
+        'DELETE FROM employee WHERE id = ?',
+        [id]
     )
 
     return findEmployeeByIDRepository(id)
 }
-
-
