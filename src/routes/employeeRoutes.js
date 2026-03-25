@@ -6,10 +6,12 @@ Desc : File containing all route for the employees
 */
 import { Router } from "express";
 import {findEmployeeByIDController, findAllEmployeesController} from "../controllers/employeeController.js";
+import {authMiddleware} from "../middlewares/authMiddleware.js";
+import {requireRole} from "../middlewares/roleMiddleware.js";
 
 const router = Router();
-router.get("/", findAllEmployeesController);
+router.get("/", authMiddleware, requireRole(["admin","manager"]), findAllEmployeesController);
 
-router.get("/:id", findEmployeeByIDController);
+router.get("/:id", authMiddleware, requireRole(["admin","manager"]),findEmployeeByIDController);
 
 export default router;

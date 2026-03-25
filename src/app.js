@@ -21,9 +21,8 @@ app.use("/meals", mealRouter);
 
 app.use("/auth", authRouter);
 
-app.use("/employee",authMiddleware, requireRole(["admin","manager"]), employeeRouter );
+app.use("/employee", employeeRouter );
 
-app.use("/employees", employeeRouter);
 
 app.use(errorMiddleware);
 
