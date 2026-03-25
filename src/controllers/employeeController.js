@@ -9,8 +9,10 @@ import {
     findEmployeeByIDService,
     createEmployeeService,
     findEmployeeByEmailService,
+    deleteEmployeeService,
     updateEmployeeService,
 } from "../services/employeeService.js"
+import {getAllOrdersService} from "../services/orderService.js";
 
 export const createEmployeeController = async (req, res, next) => {
     try {
@@ -77,6 +79,31 @@ export const createEmployeeController = async (req, res, next) => {
     } catch (error) {
         next(error)
 
+    }
+}
+export async function deleteEmployeeController(req, res, next) {
+    try {
+        const id = Number(req.params.id)
+
+        const employee = await findEmployeeByIDService(id)
+
+        if (!employee) {
+            return res.status(404).json({ error: 'Employee not found' })
+        }
+
+        const employeeHasOrder = await getAllOrdersService();
+
+        const isUsed = employeeHasOrder.some(order => order.employee_id === id);
+
+        if (isUsed) {
+            return res.status(400).json({ error: 'Employee is used in one or more order' });
+        }
+
+        await deleteEmployeeService(id)
+        return res.status(200).json({ message: 'Employee deleted successfully' })
+
+    } catch (error) {
+        next(error)
     }
 }
 

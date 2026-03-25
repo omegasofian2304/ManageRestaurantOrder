@@ -9,6 +9,7 @@ import {
     findAllEmployeesRepository,
     findEmployeeByIDRepository,
     createEmployeeRepository,
+    deleteEmployeeRepository,
     updateEmployeeRepository,
 } from '../repositories/employeeRepository.js'
 import bcrypt from 'bcrypt'
@@ -29,6 +30,10 @@ export async function findEmployeeByIDService(id){
 
 export async function findEmployeeByEmailService(email){
     return await findEmployeeByEmailRepository(email);
+}
+export const deleteEmployeeService = async (id) => {
+    return await deleteEmployeeRepository(id)
+
 }
 
 export async function updateEmployeeService(id, firstname = null,lastname = null,email = null, post = null)
