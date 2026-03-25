@@ -2,7 +2,7 @@
 Author : Sofian Hussein, Léo del Duca, Milo Soupper, Rodrigo Silva Riço
 Date : 18.03.2026
 Title : authController.js
-Desc : File containing all controllers for the employees
+Desc : File containing all controllers for auth
 */
 import { loginEmployeeService } from "../services/authService.js"
 
