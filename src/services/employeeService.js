@@ -7,10 +7,16 @@ Desc : Business logic for employees
 
 import {
     findAllEmployeesRepository,
-    findEmployeeByIDRepository, updateEmployeeRepository,
+    findEmployeeByIDRepository,
+    createEmployeeRepository
 } from '../repositories/employeeRepository.js'
+import bcrypt from 'bcrypt'
+import {findEmployeeByEmailRepository} from "../repositories/authRepository.js";
 
-
+export const createEmployeeService = async (data) => {
+    const hashedPassword = await bcrypt.hash(data.password, 12)
+    return createEmployeeRepository({ ...data, password: hashedPassword });
+}
 
 export async function findAllEmployeesService(){
     return await findAllEmployeesRepository();
@@ -20,16 +26,6 @@ export async function findEmployeeByIDService(id){
     return await findEmployeeByIDRepository(id);
 }
 
-export async function updateEmployeeService(id, firstname = null,lastname = null,email = null, post = null)
-{
-    const existingEmployee = await findEmployeeByIDService(id);
-
-    if(!existingEmployee){
-        const error = new Error('An Employee with this id does not exist')
-        error.status = 404
-        throw error
-    }
-
-
-    return await updateEmployeeRepository(id, firstname, lastname, email,post)
+export async function findEmployeeByEmailService(email){
+    return await findEmployeeByEmailRepository(email);
 }

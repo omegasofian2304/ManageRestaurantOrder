@@ -13,7 +13,6 @@ export async function findAllEmployeesRepository() {
     return result
 }
 
-
 export async function findEmployeeByIDRepository(id) {
     const [result] = await pool.execute(
         'SELECT id, first_name, last_name, email, post FROM employee where id=?',
@@ -22,42 +21,20 @@ export async function findEmployeeByIDRepository(id) {
     return result[0] ?? null
 }
 
-
-export async function updateEmployeeRepository(id, firstname = null,lastname = null,email = null, post = null) {
-    const fieldsValue = []
-    const fieldsName = []
-
-    if (firstname !== null) {
-        fieldsValue.push(firstname)
-        fieldsName.push('firstname = ?')
-    }
-
-    if (lastname !== null) {
-        fieldsValue.push(lastname)
-        fieldsName.push('lastname = ?')
-    }
-
-    if (email !== null) {
-        fieldsValue.push(email)
-        fieldsName.push('email = ?')
-    }
-
-    if (post !== null) {
-        fieldsValue.push(post)
-        fieldsName.push('post = ?')
-    }
-
-    //Pour éviter qu'un update soit vide (donc qu'on ne change rien)
-    if (fieldsName.length === 0) {
-        throw new Error('Aucun champ a été mis à jour')
-    }
-
-    fieldsValue.push(id)
+export const createEmployeeRepository = async (employee) => {
+    const { firstname, lastname, email, password ,post} = employee;
 
     const [result] = await pool.execute(
-        `UPDATE employee SET ${fieldsName.join(', ')} WHERE id = ?`,
-        fieldsValue
-    )
+        `INSERT INTO employee (first_name, last_name, email, password, post) VALUES (?, ?, ?, ?, ?)`,
+        [firstname, lastname, email, password,post]
+    );
 
-    return findEmployeeByIDRepository(id)
+    return "successfuly created employee";
+};
+
+export const findEmployeesByEmail = async (email) => {
+    const [result] = await pool.execute(
+        `SELECT email FROM employee WHERE email = ?`, [email]
+    )
+    return result[0] ?? null
 }
