@@ -23,14 +23,13 @@ export const createOrderService = async (data) => {
     return createOrderRepository(data);
 }
 
-export const getAllOrdersService = async () => {
-        return getAllOrdersRepository();
-    };
+export const getAllOrdersService = async (orderServed) => {
+    return getAllOrdersRepository(orderServed)
+}
 
 export const findOrderByIdService = async (id) => {
     return findOrderByIdRepository(id);
 }
-
 
 export const findOrderWithMealsService = async (id) => {
     return findOrderWithMealsRepository(id);

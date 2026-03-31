@@ -33,7 +33,7 @@ router.patch('/:id/status', authMiddleware, serveOrderController)
 
 router.delete('/:id/meals/:mealId', authMiddleware, removeMealFromOrderController)
 
-router.delete("/:id", authMiddleware, requireRole(["admin","manager"]), deleteOrderController)
+router.delete("/:id", authMiddleware, requireRole(["admin"]), deleteOrderController)
 
 router.patch("/:id/meals/:mealId", authMiddleware, updateMealQuantityController)
 
