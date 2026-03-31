@@ -18,10 +18,10 @@ code.
 
 ### Examples
 
--   `feature/order-management`
--   `feature/auth-middleware`
--   `fix/order-validation`
--   `refactor/database-layer`
+-   `feature/US-XX-order-management`
+-   `feature/US-XX-auth-middleware`
+-   `fix/US-XX-order-validation`
+-   `refactor/US-XX-database-layer`
 
 ------------------------------------------------------------------------
 
