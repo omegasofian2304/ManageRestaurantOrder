@@ -15,6 +15,7 @@ import { swaggerServe, swaggerSetup } from "./config/swagger.js";
 const app = express();
 
 app.use(express.json());
+
 app.use("/api-docs", swaggerServe, swaggerSetup);
 
 app.use("/orders", orderRoute);
@@ -23,7 +24,7 @@ app.use("/meals", mealRouter);
 
 app.use("/auth", authRouter);
 
-app.use("/employee", employeeRouter );
+app.use("/employees", employeeRouter );
 
 app.use(errorMiddleware);
 

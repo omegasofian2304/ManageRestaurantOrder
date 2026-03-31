@@ -96,15 +96,27 @@ export const serveOrderController = async (req, res, next) => {
 
 export const getAllOrdersController = async (req, res, next) => {
     try {
-        const orders = await getAllOrdersService();
-        if (!orders) {
-            return res.status(404).json({ message: "No orders found" });
+        let { order_served } = req.query
+
+        if (order_served !== undefined) {
+            if (order_served === '0') {
+                order_served = 0
+            } else if (order_served === '1') {
+                order_served = 1
+            } else {
+                return res.status(400).json({ error: 'order_served must be 0 or 1' })
+            }
         }
-        res.json(orders);
+
+        const orders = await getAllOrdersService(order_served)
+        if (!orders) {
+            return res.status(404).json({ message: 'No orders found' })
+        }
+        res.json(orders)
     } catch (err) {
-        next(err);
+        next(err)
     }
-};
+}
 
 export async function addMealToAnOrderController(req, res, next) {
     try {

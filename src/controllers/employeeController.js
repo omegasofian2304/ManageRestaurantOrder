@@ -91,14 +91,6 @@ export async function deleteEmployeeController(req, res, next) {
             return res.status(404).json({ error: 'Employee not found' })
         }
 
-        const employeeHasOrder = await getAllOrdersService();
-
-        const isUsed = employeeHasOrder.some(order => order.employee_id === id);
-
-        if (isUsed) {
-            return res.status(400).json({ error: 'Employee is used in one or more order' });
-        }
-
         await deleteEmployeeService(id)
         return res.status(200).json({ message: 'Employee deleted successfully' })
 

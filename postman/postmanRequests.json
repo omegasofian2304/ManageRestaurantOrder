@@ -5,7 +5,7 @@
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:3000" },
-    { "key": "token",   "value": "" }
+    { "key": "token", "value": "" }
   ],
   "item": [
     {
@@ -18,19 +18,31 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"Admin1234!\"\n}"
+              "raw": "{\n  \"email\": \"admin@restaurant.ch\",\n  \"password\": \"Admin123!\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
           }
         },
         {
-          "name": "POST /auth/login - missing fields 400",
+          "name": "POST /auth/login - invalid credentials 401",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@restaurant.com\"\n}"
+              "raw": "{\n  \"email\": \"admin@restaurant.ch\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "POST /auth/login - missing field 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@restaurant.ch\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
           }
@@ -42,239 +54,9 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"Admin1234!\"\n}"
+              "raw": "{\n  \"email\": \"notanemail\",\n  \"password\": \"Admin123!\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
-          }
-        },
-        {
-          "name": "POST /auth/login - wrong credentials 401",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@restaurant.com\",\n  \"password\": \"WrongPassword1!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Employees",
-      "item": [
-        {
-          "name": "GET /employees - valid (admin)",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "GET /employees - no token 401",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "GET /employees - forbidden role 403",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "GET /employees/:id - valid (admin/manager)",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
-          }
-        },
-        {
-          "name": "GET /employees/:id - 404",
-          "request": {
-            "method": "GET",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
-          }
-        },
-        {
-          "name": "POST /employees - valid (admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"post\": \"employee\",\n  \"email\": \"jean.dupont@restaurant.com\",\n  \"password\": \"Secure1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "POST /employees - missing firstname 400",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"lastname\": \"Dupont\",\n  \"post\": \"employee\",\n  \"email\": \"jean.dupont@restaurant.com\",\n  \"password\": \"Secure1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "POST /employees - invalid post 400",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"post\": \"chef\",\n  \"email\": \"jean.dupont@restaurant.com\",\n  \"password\": \"Secure1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "POST /employees - invalid email 400",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"post\": \"employee\",\n  \"email\": \"not-an-email\",\n  \"password\": \"Secure1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "POST /employees - weak password 400",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"post\": \"employee\",\n  \"email\": \"jean.dupont@restaurant.com\",\n  \"password\": \"weak\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "POST /employees - duplicate email 409",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"post\": \"employee\",\n  \"email\": \"jean.dupont@restaurant.com\",\n  \"password\": \"Secure1234!\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
-          }
-        },
-        {
-          "name": "PATCH /employees/:id - valid (admin)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Pierre\",\n  \"post\": \"manager\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
-          }
-        },
-        {
-          "name": "PATCH /employees/:id - empty body 400",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
-          }
-        },
-        {
-          "name": "PATCH /employees/:id - invalid post 400",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"post\": \"chef\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
-          }
-        },
-        {
-          "name": "PATCH /employees/:id - 404",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstname\": \"Pierre\"\n}"
-            },
-            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
-          }
-        },
-        {
-          "name": "DELETE /employees/:id - valid (admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
-          }
-        },
-        {
-          "name": "DELETE /employees/:id - 404",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
-          }
-        },
-        {
-          "name": "DELETE /employees/:id - has orders 400",
-          "request": {
-            "method": "DELETE",
-            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
-            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
           }
         }
       ]
@@ -317,6 +99,19 @@
           }
         },
         {
+          "name": "GET /meals?available=invalid 400",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/meals?available=oui",
+              "host": ["{{baseUrl}}"],
+              "path": ["meals"],
+              "query": [{ "key": "available", "value": "oui" }]
+            }
+          }
+        },
+        {
           "name": "GET /meals/:id",
           "request": {
             "method": "GET",
@@ -325,7 +120,7 @@
           }
         },
         {
-          "name": "GET /meals/:id - 404",
+          "name": "GET /meals/:id - not found 404",
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
@@ -337,12 +132,12 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Burger Classic\",\n  \"price\": 12.50,\n  \"description\": \"Un bon burger\"\n}"
+              "raw": "{\n  \"name\": \"Burger Classic\",\n  \"price\": 12.50,\n  \"description\": \"Burger boeuf maison\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/meals", "host": ["{{baseUrl}}"], "path": ["meals"] }
           }
@@ -352,8 +147,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -363,31 +158,46 @@
           }
         },
         {
-          "name": "POST /meals - duplicate name 409",
+          "name": "POST /meals - negative price 400",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Burger Classic\",\n  \"price\": 9.99\n}"
+              "raw": "{\n  \"name\": \"Test\",\n  \"price\": -5\n}"
             },
             "url": { "raw": "{{baseUrl}}/meals", "host": ["{{baseUrl}}"], "path": ["meals"] }
           }
         },
         {
-          "name": "POST /meals - invalid price 400",
+          "name": "POST /meals - duplicate name 409",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Pizza\",\n  \"price\": -5\n}"
+              "raw": "{\n  \"name\": \"Burger Classic\",\n  \"price\": 10.00\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/meals", "host": ["{{baseUrl}}"], "path": ["meals"] }
+          }
+        },
+        {
+          "name": "POST /meals - unauthorized employee 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Frites\",\n  \"price\": 4.00\n}"
             },
             "url": { "raw": "{{baseUrl}}/meals", "host": ["{{baseUrl}}"], "path": ["meals"] }
           }
@@ -397,23 +207,23 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"price\": 13.00,\n  \"is_available\": false\n}"
+              "raw": "{\n  \"price\": 13.50,\n  \"is_available\": false\n}"
             },
             "url": { "raw": "{{baseUrl}}/meals/1", "host": ["{{baseUrl}}"], "path": ["meals", "1"] }
           }
         },
         {
-          "name": "PATCH /meals/:id - empty body 400",
+          "name": "PATCH /meals/:id - no fields 400",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -423,12 +233,12 @@
           }
         },
         {
-          "name": "PATCH /meals/:id - 404",
+          "name": "PATCH /meals/:id - not found 404",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -446,7 +256,7 @@
           }
         },
         {
-          "name": "DELETE /meals/:id - 404",
+          "name": "DELETE /meals/:id - not found 404",
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
@@ -475,6 +285,45 @@
           }
         },
         {
+          "name": "GET /orders?order_served=0",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/orders?order_served=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"],
+              "query": [{ "key": "order_served", "value": "0" }]
+            }
+          }
+        },
+        {
+          "name": "GET /orders?order_served=1",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/orders?order_served=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"],
+              "query": [{ "key": "order_served", "value": "1" }]
+            }
+          }
+        },
+        {
+          "name": "GET /orders?order_served=invalid 400",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/orders?order_served=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["orders"],
+              "query": [{ "key": "order_served", "value": "2" }]
+            }
+          }
+        },
+        {
           "name": "GET /orders/:id",
           "request": {
             "method": "GET",
@@ -483,7 +332,7 @@
           }
         },
         {
-          "name": "GET /orders/:id - 404",
+          "name": "GET /orders/:id - not found 404",
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
@@ -495,12 +344,12 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"clientName\": \"Alice\"\n}"
+              "raw": "{\n  \"clientName\": \"Jean\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] }
           }
@@ -510,8 +359,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -525,8 +374,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -540,8 +389,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -555,12 +404,12 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"meals\": [\n    { \"meal_id\": 1, \"quantity\": 3 }\n  ]\n}"
+              "raw": "{\n  \"meals\": [\n    { \"meal_id\": 1, \"quantity\": 1 }\n  ]\n}"
             },
             "url": { "raw": "{{baseUrl}}/orders/1/meals", "host": ["{{baseUrl}}"], "path": ["orders", "1", "meals"] }
           }
@@ -570,8 +419,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -585,12 +434,12 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"meals\": [\n    { \"meal_id\": 99, \"quantity\": 1 }\n  ]\n}"
+              "raw": "{\n  \"meals\": [\n    { \"meal_id\": 2, \"quantity\": 1 }\n  ]\n}"
             },
             "url": { "raw": "{{baseUrl}}/orders/1/meals", "host": ["{{baseUrl}}"], "path": ["orders", "1", "meals"] }
           }
@@ -600,8 +449,8 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -615,12 +464,12 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"quantity\": 5\n}"
+              "raw": "{\n  \"quantity\": 3\n}"
             },
             "url": { "raw": "{{baseUrl}}/orders/1/meals/1", "host": ["{{baseUrl}}"], "path": ["orders", "1", "meals", "1"] }
           }
@@ -630,14 +479,29 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"quantity\": 0\n}"
             },
             "url": { "raw": "{{baseUrl}}/orders/1/meals/1", "host": ["{{baseUrl}}"], "path": ["orders", "1", "meals", "1"] }
+          }
+        },
+        {
+          "name": "PATCH /orders/:id/meals/:mealId - order served 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/orders/999/meals/1", "host": ["{{baseUrl}}"], "path": ["orders", "999", "meals", "1"] }
           }
         },
         {
@@ -657,12 +521,20 @@
           }
         },
         {
+          "name": "DELETE /orders/:id/meals/:mealId - order served 409",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/999/meals/1", "host": ["{{baseUrl}}"], "path": ["orders", "999", "meals", "1"] }
+          }
+        },
+        {
           "name": "PATCH /orders/:id/status - valid (serve order)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -676,8 +548,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -691,8 +563,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -706,8 +578,8 @@
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Content-Type",  "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{token}}" }
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -725,7 +597,7 @@
           }
         },
         {
-          "name": "DELETE /orders/:id - 404",
+          "name": "DELETE /orders/:id - not found 404",
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
@@ -738,6 +610,202 @@
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": { "raw": "{{baseUrl}}/orders/1", "host": ["{{baseUrl}}"], "path": ["orders", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "GET /employees",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "GET /employees - unauthorized employee 403",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "GET /employees/:id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
+          }
+        },
+        {
+          "name": "GET /employees/:id - not found 404",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
+          }
+        },
+        {
+          "name": "POST /employees - valid",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"email\": \"jean.dupont@restaurant.ch\",\n  \"password\": \"Secure123!\",\n  \"post\": \"employee\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "POST /employees - duplicate email 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"email\": \"admin@restaurant.ch\",\n  \"password\": \"Secure123!\",\n  \"post\": \"employee\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "POST /employees - missing field 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"email\": \"jean@restaurant.ch\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "POST /employees - invalid password 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"email\": \"jean2@restaurant.ch\",\n  \"password\": \"weak\",\n  \"post\": \"employee\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "POST /employees - invalid role 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"email\": \"jean3@restaurant.ch\",\n  \"password\": \"Secure123!\",\n  \"post\": \"superadmin\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "POST /employees - unauthorized 403",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Jean\",\n  \"lastname\": \"Dupont\",\n  \"email\": \"jean4@restaurant.ch\",\n  \"password\": \"Secure123!\",\n  \"post\": \"employee\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] }
+          }
+        },
+        {
+          "name": "PATCH /employees/:id - valid",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Pierre\",\n  \"post\": \"manager\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
+          }
+        },
+        {
+          "name": "PATCH /employees/:id - no fields 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
+          }
+        },
+        {
+          "name": "PATCH /employees/:id - not found 404",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstname\": \"Pierre\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
+          }
+        },
+        {
+          "name": "DELETE /employees/:id - valid",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
+          }
+        },
+        {
+          "name": "DELETE /employees/:id - not found 404",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees/9999", "host": ["{{baseUrl}}"], "path": ["employees", "9999"] }
+          }
+        },
+        {
+          "name": "DELETE /employees/:id - unauthorized 403",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] }
           }
         }
       ]

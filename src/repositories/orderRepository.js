@@ -88,14 +88,26 @@ export const serveOrderRepository = async (id) => {
     return result.affectedRows > 0;
 };
 
-export const getAllOrdersRepository = async () => {
+export const getAllOrdersRepository = async (orderServed) => {
+    if (orderServed !== undefined) {
+        const [rows] = await pool.execute(
+            `SELECT co.*, e.first_name, e.last_name
+             FROM customer_order co
+             JOIN employee e ON e.id = co.employee_id
+             WHERE co.order_served = ?
+             ORDER BY co.creation_date DESC`,
+            [orderServed]
+        )
+        return rows.length > 0 ? rows : null
+    }
+
     const [rows] = await pool.execute(
         `SELECT co.*, e.first_name, e.last_name
          FROM customer_order co
          JOIN employee e ON e.id = co.employee_id
          ORDER BY co.creation_date DESC`
-    );
-    return rows.length > 0 ? rows : null;
+    )
+    return rows.length > 0 ? rows : null
 }
 
 export const addMealToAnOrderRepository = async (orderId, mealId, quantity) => {
