@@ -10,49 +10,6 @@ The objective is to deliver a clean and extensible backend system suitable for r
 
 ---
 
-## Architecture
-
-The application follows a layered architecture:
-
-Client
-   |
-   v
-Routes
-   |
-   v
-Controllers
-   |
-   v
-Services
-   |
-   v
-Repositories
-   |
-   v
-MySQL Database
-
----
-
-### Project Structure
-
-ManageRestaurantOrder/
-│
-├── src/
-│   │
-│   ├── config/         # Database and environment configuration
-│   ├── routes/         # API route definitions
-│   ├── controllers/    # HTTP request handling
-│   ├── services/       # Business logic layer
-│   ├── repositories/   # Database queries (mysql2)
-│   ├── middlewares/    # Custom middlewares (auth, error handling)
-│
-├── app.js              # Application entry point
-├── .env                # Environment variables (not committed)
-├── package.json
-└── README.md
-
----
-
 ### Architectural Principles
 
 - Functional approach (no object-oriented programming)
